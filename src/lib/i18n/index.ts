@@ -7,16 +7,16 @@ import { writable } from 'svelte/store';
 const createI18nStore = (i18n: i18nType) => {
 	const i18nWritable = writable(i18n);
 
-	i18n.on('initialized', () => {
-		i18nWritable.set(i18n);
-	});
-	i18n.on('loaded', () => {
-		i18nWritable.set(i18n);
-	});
-	i18n.on('added', () => i18nWritable.set(i18n));
-	i18n.on('languageChanged', () => {
-		i18nWritable.set(i18n);
-	});
+	// Use Object.create to produce a new reference each time,
+	// forcing Svelte 5's store-to-signal bridge to detect a change.
+	const forceUpdate = () => {
+		i18nWritable.set(Object.create(i18n));
+	};
+
+	i18n.on('initialized', forceUpdate);
+	i18n.on('loaded', forceUpdate);
+	i18n.on('added', forceUpdate);
+	i18n.on('languageChanged', forceUpdate);
 	return i18nWritable;
 };
 
@@ -78,9 +78,9 @@ export const getLanguages = async () => {
 	const languages = (await import(`./locales/languages.json`)).default;
 	return languages;
 };
-export const changeLanguage = (lang: string) => {
+export const changeLanguage = async (lang: string) => {
 	document.documentElement.setAttribute('lang', lang);
-	i18next.changeLanguage(lang);
+	await i18next.changeLanguage(lang);
 };
 
 export default i18n;

@@ -35,6 +35,8 @@ class User(Base):
 
     oauth_sub = Column(Text, unique=True)
 
+    employee_id = Column(String(50), nullable=True)
+
 
 class UserSettings(BaseModel):
     ui: Optional[dict] = {}
@@ -58,6 +60,8 @@ class UserModel(BaseModel):
     info: Optional[dict] = None
 
     oauth_sub: Optional[str] = None
+
+    employee_id: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -103,6 +107,7 @@ class UsersTable:
         profile_image_url: str = "/user.png",
         role: str = "pending",
         oauth_sub: Optional[str] = None,
+        employee_id: Optional[str] = None,
     ) -> Optional[UserModel]:
         with get_db() as db:
             user = UserModel(
@@ -116,6 +121,7 @@ class UsersTable:
                     "created_at": int(time.time()),
                     "updated_at": int(time.time()),
                     "oauth_sub": oauth_sub,
+                    "employee_id": employee_id,
                 }
             )
             result = User(**user.model_dump())
@@ -147,6 +153,14 @@ class UsersTable:
         try:
             with get_db() as db:
                 user = db.query(User).filter_by(email=email).first()
+                return UserModel.model_validate(user)
+        except Exception:
+            return None
+
+    def get_user_by_employee_id(self, employee_id: str) -> Optional[UserModel]:
+        try:
+            with get_db() as db:
+                user = db.query(User).filter_by(employee_id=employee_id).first()
                 return UserModel.model_validate(user)
         except Exception:
             return None

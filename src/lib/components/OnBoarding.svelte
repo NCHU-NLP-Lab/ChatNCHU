@@ -4,7 +4,6 @@
 
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
-	import Marquee from './common/Marquee.svelte';
 	import SlideShow from './common/SlideShow.svelte';
 	import ArrowRightCircle from './icons/ArrowRightCircle.svelte';
 
@@ -40,20 +39,6 @@
 
 {#if show}
 	<div class="w-full h-screen max-h-[100dvh] text-white relative">
-		<div class="fixed m-10 z-50">
-			<div class="flex space-x-2">
-				<div class=" self-center">
-					<img
-						id="logo"
-						crossorigin="anonymous"
-						src="{WEBUI_BASE_URL}/static/favicon.png"
-						class=" w-6 rounded-full"
-						alt="logo"
-					/>
-				</div>
-			</div>
-		</div>
-
 		<SlideShow duration={5000} />
 
 		<div
@@ -64,24 +49,16 @@
 
 		<div class="relative bg-transparent w-full min-h-screen flex z-10">
 			<div class="flex flex-col justify-end w-full items-center pb-10 text-center">
-				<div class="text-5xl lg:text-7xl font-secondary">
-					<Marquee
-						duration={5000}
-						words={[
-							$i18n.t('Explore the cosmos'),
-							$i18n.t('Unlock mysteries'),
-							$i18n.t('Chart new frontiers'),
-							$i18n.t('Dive into knowledge'),
-							$i18n.t('Discover wonders'),
-							$i18n.t('Ignite curiosity'),
-							$i18n.t('Forge new paths'),
-							$i18n.t('Unravel secrets'),
-							$i18n.t('Pioneer insights'),
-							$i18n.t('Embark on adventures')
-						]}
+				<div class="flex flex-col items-center mb-4">
+					<img
+						crossorigin="anonymous"
+						src="{WEBUI_BASE_URL}/static/static/splash.png"
+						class="w-20 rounded-2xl mb-4"
+						alt="logo"
 					/>
-
-					<div class="mt-0.5">{$i18n.t(`wherever you are`)}</div>
+					<div class="text-4xl lg:text-5xl font-secondary">
+						{$i18n.t('Welcome to ChatNCHU')}
+					</div>
 				</div>
 
 				<div class="flex justify-center mt-8">
@@ -98,8 +75,6 @@
 					</div>
 				</div>
 			</div>
-
-			<!-- <div class="absolute bottom-12 left-0 right-0 w-full"></div> -->
 		</div>
 	</div>
 {/if}

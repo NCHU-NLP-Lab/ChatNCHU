@@ -1,65 +1,72 @@
 <p align="center">
-  <img src="./static/favicon.png" alt="ChatNCHU Logo" width="120" />
+  <img src="./static/static/splash.png" alt="ChatNCHU Logo" width="140" />
 </p>
 
 <h1 align="center">ChatNCHU</h1>
 
 <p align="center">
-  A customized AI chat platform for National Chung Hsing University, built on <a href="https://github.com/open-webui/open-webui/tree/v0.6.5">Open WebUI v0.6.5</a> (BSD-3).
+  國立中興大學 AI 聊天平台<br>
+  Built on <a href="https://github.com/open-webui/open-webui/tree/v0.6.5">Open WebUI v0.6.5</a> (BSD-3-Clause)
 </p>
+
+<p align="center">
+  <img src="./static/assets/images/nchu-gate.jpg" alt="NCHU Campus" width="600" />
+</p>
+
+---
 
 ## Features
 
-- Multi-model AI chat via OpenRouter (Gemini, GPT-4o, Claude, etc.)
-- Web search integration (DuckDuckGo, Brave, Google, etc.)
+### Inherited from Open WebUI v0.6.5
+
+- OpenAI-compatible API support (connect to any provider)
+- Web search integration (17+ engines)
 - File & image upload with RAG support
-- Built-in i18n support (55 languages)
-- Comprehensive admin panel
-- Email-verified registration with domain whitelist
-- Demo session time limits (daily login count + session duration)
-- Employee/Student ID field for campus users
+- Built-in i18n (55 languages)
+- Comprehensive admin panel (users, models, connections, search, etc.)
+- LDAP / OAuth authentication
+
+### ChatNCHU Additions
+
+- **Email-verified registration** — 6-digit verification code via SMTP
+- **Forgot password** — 3-step reset flow (email → code → new password)
+- **Email domain whitelist** — restrict registration to specific domains (e.g. `nchu.edu.tw`)
+- **Employee / Student ID** — campus user identification field, supports login by ID
+- **Demo session time limit** — daily login count + session duration countdown + auto-logout
+- **Admin email on login page** — configurable contact info displayed in footer
+- **LanguageSwitcher** — 7 languages (zh-TW, en-US, ja-JP, ko-KR, vi-VN, th-TH, id-ID)
+- **Model management** — batch enable/disable, active-first sorting, auto-assign logos
+- **Campus branding** — custom logo, campus gate background, branded onboarding
 
 ## Quick Start
 
 ```bash
-# Clone
 git clone git@github.com:NCHU-NLP-Lab/ChatNCHU.git
 cd ChatNCHU
-
-# Run
-docker compose up -d
+docker compose up -d --build
 ```
 
-Access at http://localhost:8080
+Access at http://localhost:3000 — the first registered user becomes admin.
 
-## Configuration
+> **Note:** This repo contains the application source code. For production deployment configuration (docker-compose overrides, `.env`, reverse proxy), see the separate deploy repo.
 
-### Environment Variables
+## Admin Panel Configuration
 
-Set via `Admin Panel → Settings` or Docker environment variables.
+Most settings can be configured through the **Admin Panel** GUI after login:
 
-| Variable | Description |
-|----------|-------------|
-| `OPENAI_API_BASE_URL` | OpenRouter API URL (`https://openrouter.ai/api/v1`) |
-| `OPENAI_API_KEY` | OpenRouter API key |
-| `WEBUI_AUTH` | Enable authentication (default: `true`) |
-| `DEFAULT_USER_ROLE` | Default role for new users (`pending` / `user` / `admin`) |
-
-### SMTP (for email verification)
-
-| Variable | Description |
-|----------|-------------|
-| `SMTP_HOST` | SMTP server host |
-| `SMTP_PORT` | SMTP server port |
-| `SMTP_USER` | SMTP username |
-| `SMTP_PASSWORD` | SMTP password |
-| `SMTP_FROM` | Sender email address |
+| Section | What you can configure |
+|---------|----------------------|
+| **Connections** | LLM API endpoint & key (OpenRouter, Ollama, etc.) |
+| **Models** | Enable/disable models, set default models |
+| **Web Search** | Search engine selection & API keys |
+| **ChatNCHU Settings** | Email domains, verification, demo limits, SMTP, admin email |
+| **Authentication** | Signup toggle, default role, JWT expiration, LDAP |
 
 ## License
 
 ChatNCHU is licensed under the [GNU Affero General Public License v3.0](./LICENSE).
 
-This project is based on [Open WebUI v0.6.5](https://github.com/open-webui/open-webui/tree/v0.6.5), originally released under the BSD 3-Clause License. See [NOTICE](./NOTICE) for the original copyright notice.
+Based on [Open WebUI v0.6.5](https://github.com/open-webui/open-webui/tree/v0.6.5), originally released under the BSD 3-Clause License. See [NOTICE](./NOTICE) for the original copyright notice.
 
 ## Developed by
 

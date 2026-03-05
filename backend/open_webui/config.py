@@ -2693,3 +2693,73 @@ LDAP_CA_CERT_FILE = PersistentConfig(
 LDAP_CIPHERS = PersistentConfig(
     "LDAP_CIPHERS", "ldap.server.ciphers", os.environ.get("LDAP_CIPHERS", "ALL")
 )
+
+####################################
+# ChatNCHU Stage 1
+####################################
+
+ALLOWED_EMAIL_DOMAINS = PersistentConfig(
+    "ALLOWED_EMAIL_DOMAINS",
+    "chatnchu.allowed_email_domains",
+    os.environ.get("ALLOWED_EMAIL_DOMAINS", ""),
+)
+
+ENABLE_EMAIL_VERIFICATION = PersistentConfig(
+    "ENABLE_EMAIL_VERIFICATION",
+    "chatnchu.enable_email_verification",
+    os.environ.get("ENABLE_EMAIL_VERIFICATION", "False").lower() == "true",
+)
+
+SMTP_HOST = PersistentConfig(
+    "SMTP_HOST",
+    "chatnchu.smtp.host",
+    os.environ.get("SMTP_HOST", ""),
+)
+
+SMTP_PORT = PersistentConfig(
+    "SMTP_PORT",
+    "chatnchu.smtp.port",
+    int(os.environ.get("SMTP_PORT", "587")),
+)
+
+SMTP_USER = PersistentConfig(
+    "SMTP_USER",
+    "chatnchu.smtp.user",
+    os.environ.get("SMTP_USER", ""),
+)
+
+SMTP_PASSWORD = PersistentConfig(
+    "SMTP_PASSWORD",
+    "chatnchu.smtp.password",
+    os.environ.get("SMTP_PASSWORD", ""),
+)
+
+SMTP_FROM = PersistentConfig(
+    "SMTP_FROM",
+    "chatnchu.smtp.from",
+    os.environ.get("SMTP_FROM", ""),
+)
+
+SMTP_USE_TLS = PersistentConfig(
+    "SMTP_USE_TLS",
+    "chatnchu.smtp.use_tls",
+    os.environ.get("SMTP_USE_TLS", "True").lower() == "true",
+)
+
+ENABLE_DEMO_TIME_LIMIT = PersistentConfig(
+    "ENABLE_DEMO_TIME_LIMIT",
+    "chatnchu.enable_demo_time_limit",
+    os.environ.get("ENABLE_DEMO_TIME_LIMIT", "False").lower() == "true",
+)
+
+DEMO_DAILY_LOGIN_LIMIT = PersistentConfig(
+    "DEMO_DAILY_LOGIN_LIMIT",
+    "chatnchu.demo_daily_login_limit",
+    int(os.environ.get("DEMO_DAILY_LOGIN_LIMIT", "1")),
+)
+
+DEMO_SESSION_DURATION = PersistentConfig(
+    "DEMO_SESSION_DURATION",
+    "chatnchu.demo_session_duration",
+    int(os.environ.get("DEMO_SESSION_DURATION", "7200")),
+)

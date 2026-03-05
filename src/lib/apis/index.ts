@@ -5,6 +5,45 @@ import { getOpenAIModelsDirect } from './openai';
 import { parse } from 'yaml';
 import { toast } from 'svelte-sonner';
 
+const MODEL_LOGO_RULES: [RegExp, string][] = [
+	[/^OpenAI:\s*GPT/i, '/static/img/openai-color.svg'],
+	[/^Anthropic:\s*Claude/i, '/static/img/claude-color.svg'],
+	[/^Google:\s*Gemini/i, '/static/img/gemini-color.svg']
+];
+
+const DEFAULT_MODEL_IMAGE = '/static/favicon.png';
+
+function isDefaultImage(url: string | undefined | null): boolean {
+	return !url || url === DEFAULT_MODEL_IMAGE;
+}
+
+export function assignModelLogos(models: any[]): any[] {
+	for (const model of models) {
+		// Models page uses model.meta, chat uses model.info.meta
+		if (!model.meta) {
+			model.meta = {};
+		}
+		if (isDefaultImage(model.meta.profile_image_url)) {
+			const name = model?.name ?? '';
+			for (const [pattern, logo] of MODEL_LOGO_RULES) {
+				if (pattern.test(name)) {
+					model.meta.profile_image_url = logo;
+					break;
+				}
+			}
+		}
+		// Also set info.meta for chat UI compatibility (Selector.svelte reads model.info.meta.profile_image_url)
+		if (model.meta.profile_image_url && !isDefaultImage(model.meta.profile_image_url)) {
+			if (!model.info) model.info = {};
+			if (!model.info.meta) model.info.meta = {};
+			if (isDefaultImage(model.info.meta.profile_image_url)) {
+				model.info.meta.profile_image_url = model.meta.profile_image_url;
+			}
+		}
+	}
+	return models;
+}
+
 export const getModels = async (
 	token: string = '',
 	connections: object | null = null,
@@ -146,7 +185,7 @@ export const getModels = async (
 		models = Object.values(modelsMap);
 	}
 
-	return models;
+	return assignModelLogos(models);
 };
 
 type ChatCompletedForm = {

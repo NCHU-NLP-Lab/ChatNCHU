@@ -2034,7 +2034,7 @@
 								bind:webSearchEnabled
 								bind:atSelectedModel
 								toolServers={$toolServers}
-								transparentBackground={$settings?.backgroundImageUrl ?? false}
+								transparentBackground={true}
 								{stopResponse}
 								{createMessagePair}
 								onChange={(input) => {
@@ -2086,7 +2086,7 @@
 								bind:codeInterpreterEnabled
 								bind:webSearchEnabled
 								bind:atSelectedModel
-								transparentBackground={$settings?.backgroundImageUrl ?? false}
+								transparentBackground={true}
 								toolServers={$toolServers}
 								{stopResponse}
 								{createMessagePair}

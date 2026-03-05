@@ -5,6 +5,8 @@
 	import { onMount, getContext } from 'svelte';
 
 	import { updateUserById } from '$lib/apis/users';
+	import { resetDemoSession } from '$lib/apis/auths';
+	import { config } from '$lib/stores';
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -33,6 +35,22 @@
 			dispatch('save');
 			show = false;
 		}
+	};
+
+	let resettingSession = false;
+
+	const resetDemoSessionHandler = async () => {
+		if (!selectedUser?.id) return;
+		resettingSession = true;
+		try {
+			const res = await resetDemoSession(localStorage.token, selectedUser.id);
+			if (res) {
+				toast.success($i18n.t(res.message));
+			}
+		} catch (error) {
+			toast.error(`${error}`);
+		}
+		resettingSession = false;
 	};
 
 	onMount(() => {
@@ -139,6 +157,25 @@
 							</div>
 						</div>
 					</div>
+
+					{#if $config?.features?.enable_demo_time_limit && _user.role !== 'admin'}
+						<div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+							<div class="flex items-center justify-between">
+								<div>
+									<div class="text-xs font-medium">{$i18n.t('Demo Session')}</div>
+									<div class="text-xs text-gray-500">{$i18n.t("Reset this user's daily session so they can log in again today.")}</div>
+								</div>
+								<button
+									class="shrink-0 px-3 py-1.5 text-xs font-medium bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 transition rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+									type="button"
+									disabled={resettingSession}
+									on:click={resetDemoSessionHandler}
+								>
+									{resettingSession ? $i18n.t('Resetting...') : $i18n.t('Reset Today Session')}
+								</button>
+							</div>
+						</div>
+					{/if}
 
 					<div class="flex justify-end pt-3 text-sm font-medium">
 						<button

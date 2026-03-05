@@ -15,7 +15,7 @@
 		updateModelById
 	} from '$lib/apis/models';
 
-	import { getModels } from '$lib/apis';
+	import { getModels, assignModelLogos } from '$lib/apis';
 	import Search from '$lib/components/icons/Search.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Switch from '$lib/components/common/Switch.svelte';
@@ -54,11 +54,11 @@
 		filteredModels = models
 			.filter((m) => searchValue === '' || m.name.toLowerCase().includes(searchValue.toLowerCase()))
 			.sort((a, b) => {
-				// // Check if either model is inactive and push them to the bottom
-				// if ((a.is_active ?? true) !== (b.is_active ?? true)) {
-				// 	return (b.is_active ?? true) - (a.is_active ?? true);
-				// }
-				// If both models' active states are the same, sort alphabetically
+				const aActive = a.is_active ?? true;
+				const bActive = b.is_active ?? true;
+				if (aActive !== bActive) {
+					return bActive - aActive;
+				}
 				return a.name.localeCompare(b.name);
 			});
 	}
@@ -76,24 +76,26 @@
 		workspaceModels = await getBaseModels(localStorage.token);
 		baseModels = await getModels(localStorage.token, null, true);
 
-		models = baseModels.map((m) => {
-			const workspaceModel = workspaceModels.find((wm) => wm.id === m.id);
+		models = assignModelLogos(
+			baseModels.map((m) => {
+				const workspaceModel = workspaceModels.find((wm) => wm.id === m.id);
 
-			if (workspaceModel) {
-				return {
-					...m,
-					...workspaceModel
-				};
-			} else {
-				return {
-					...m,
-					id: m.id,
-					name: m.name,
+				if (workspaceModel) {
+					return {
+						...m,
+						...workspaceModel
+					};
+				} else {
+					return {
+						...m,
+						id: m.id,
+						name: m.name,
 
-					is_active: true
-				};
-			}
-		});
+						is_active: true
+					};
+				}
+			})
+		);
 	};
 
 	const upsertModelHandler = async (model) => {
@@ -158,6 +160,43 @@
 				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
 			)
 		);
+	};
+
+	const toggleAllModels = async (enable) => {
+		const toToggle = models.filter((m) => (m.is_active ?? true) !== enable);
+		if (toToggle.length === 0) return;
+
+		const BATCH_SIZE = 20;
+		for (let i = 0; i < toToggle.length; i += BATCH_SIZE) {
+			const batch = toToggle.slice(i, i + BATCH_SIZE);
+			await Promise.allSettled(
+				batch.map((model) => {
+					model.is_active = enable;
+					const payload = {
+						id: model.id,
+						name: model.name,
+						base_model_id: null,
+						meta: model.meta ?? {},
+						params: {},
+						access_control: {},
+						is_active: enable
+					};
+					if (Object.keys(model).includes('base_model_id')) {
+						return updateModelById(localStorage.token, model.id, payload).catch(() => null);
+					} else {
+						return createNewModel(localStorage.token, payload).catch(() => null);
+					}
+				})
+			);
+		}
+
+		_models.set(
+			await getModels(
+				localStorage.token,
+				$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
+			)
+		);
+		await init();
 	};
 
 	const hideModelHandler = async (model) => {
@@ -273,6 +312,25 @@
 					/>
 				</div>
 			</div>
+
+			{#if $user?.role === 'admin'}
+				<div class="flex items-center gap-1">
+					<button
+						class="text-xs px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 font-medium transition"
+						type="button"
+						on:click={() => toggleAllModels(true)}
+					>
+						{$i18n.t('Enable All')}
+					</button>
+					<button
+						class="text-xs px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 font-medium transition"
+						type="button"
+						on:click={() => toggleAllModels(false)}
+					>
+						{$i18n.t('Disable All')}
+					</button>
+				</div>
+			{/if}
 		</div>
 
 		<div class=" my-2 mb-5" id="model-list">

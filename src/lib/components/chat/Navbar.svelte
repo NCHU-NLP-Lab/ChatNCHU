@@ -18,6 +18,7 @@
 
 	import { slide } from 'svelte/transition';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 
 	import ShareChatModal from '../chat/ShareChatModal.svelte';
 	import ModelSelector from '../chat/ModelSelector.svelte';
@@ -28,7 +29,10 @@
 	import AdjustmentsHorizontal from '../icons/AdjustmentsHorizontal.svelte';
 
 	import PencilSquare from '../icons/PencilSquare.svelte';
+	import ChatBubbleOval from '../icons/ChatBubbleOval.svelte';
 	import Banner from '../common/Banner.svelte';
+	import DemoTimer from '../layout/DemoTimer.svelte';
+	import LanguageSwitcher from '../common/LanguageSwitcher.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -43,6 +47,25 @@
 
 	let showShareChatModal = false;
 	let showDownloadChatModal = false;
+
+	$: canToggleTemporaryChat =
+		$user?.role === 'admin' ||
+		(($user?.permissions?.chat?.temporary ?? true) &&
+			!($user?.permissions?.chat?.temporary_enforced ?? false));
+
+	const toggleTemporaryChat = async () => {
+		temporaryChatEnabled.set(!$temporaryChatEnabled);
+		await goto('/');
+		const newChatButton = document.getElementById('new-chat-button');
+		setTimeout(() => {
+			newChatButton?.click();
+		}, 0);
+		if ($temporaryChatEnabled) {
+			history.replaceState(null, '', '?temporary-chat=true');
+		} else {
+			history.replaceState(null, '', location.pathname);
+		}
+	};
 </script>
 
 <ShareChatModal bind:show={showShareChatModal} chatId={$chatId} />
@@ -84,7 +107,7 @@
 					{/if}
 				</div>
 
-				<div class="self-start flex flex-none items-center text-gray-600 dark:text-gray-400">
+				<div class="self-start flex flex-none items-center gap-1 text-gray-600 dark:text-gray-400">
 					<!-- <div class="md:hidden flex self-center w-[1px] h-5 mx-2 bg-gray-300 dark:bg-stone-700" /> -->
 					{#if shareEnabled && chat && (chat.id || $temporaryChatEnabled)}
 						<Menu
@@ -121,19 +144,19 @@
 						</Menu>
 					{/if}
 
-					<Tooltip content={$i18n.t('Controls')}>
-						<button
-							class=" flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
-							on:click={async () => {
-								await showControls.set(!$showControls);
-							}}
-							aria-label="Controls"
-						>
-							<div class=" m-auto self-center">
-								<AdjustmentsHorizontal className=" size-5" strokeWidth="0.5" />
-							</div>
-						</button>
-					</Tooltip>
+					{#if canToggleTemporaryChat}
+						<Tooltip content={$i18n.t($temporaryChatEnabled ? 'Temporary Chat On' : 'Temporary Chat')}>
+							<button
+								class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition {($temporaryChatEnabled ? 'text-blue-500 dark:text-blue-400' : '')}"
+								on:click={toggleTemporaryChat}
+								aria-label="Temporary Chat"
+							>
+								<div class="m-auto self-center">
+									<ChatBubbleOval className="size-5" strokeWidth="2" />
+								</div>
+							</button>
+						</Tooltip>
+					{/if}
 
 					<Tooltip content={$i18n.t('New Chat')}>
 						<button
@@ -151,6 +174,23 @@
 							</div>
 						</button>
 					</Tooltip>
+
+					<Tooltip content={$i18n.t('Controls')}>
+						<button
+							class=" flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+							on:click={async () => {
+								await showControls.set(!$showControls);
+							}}
+							aria-label="Controls"
+						>
+							<div class=" m-auto self-center">
+								<AdjustmentsHorizontal className=" size-5" strokeWidth="0.5" />
+							</div>
+						</button>
+					</Tooltip>
+
+					<LanguageSwitcher />
+					<DemoTimer />
 
 					{#if $user !== undefined && $user !== null}
 						<UserMenu

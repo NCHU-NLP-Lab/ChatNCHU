@@ -88,6 +88,8 @@ class SignupForm(BaseModel):
     email: str
     password: str
     profile_image_url: Optional[str] = "/user.png"
+    employee_id: Optional[str] = None
+    verification_code: Optional[str] = None
 
 
 class AddUserForm(SignupForm):
@@ -103,6 +105,7 @@ class AuthsTable:
         profile_image_url: str = "/user.png",
         role: str = "pending",
         oauth_sub: Optional[str] = None,
+        employee_id: Optional[str] = None,
     ) -> Optional[UserModel]:
         with get_db() as db:
             log.info("insert_new_auth")
@@ -116,7 +119,8 @@ class AuthsTable:
             db.add(result)
 
             user = Users.insert_new_user(
-                id, name, email, profile_image_url, role, oauth_sub
+                id, name, email, profile_image_url, role, oauth_sub,
+                employee_id=employee_id,
             )
 
             db.commit()
@@ -140,6 +144,22 @@ class AuthsTable:
                         return None
                 else:
                     return None
+        except Exception:
+            return None
+
+    def authenticate_user_by_employee_id(
+        self, employee_id: str, password: str
+    ) -> Optional[UserModel]:
+        log.info(f"authenticate_user_by_employee_id: {employee_id}")
+        try:
+            user = Users.get_user_by_employee_id(employee_id)
+            if not user:
+                return None
+            with get_db() as db:
+                auth = db.query(Auth).filter_by(email=user.email, active=True).first()
+                if auth and verify_password(password, auth.password):
+                    return user
+                return None
         except Exception:
             return None
 

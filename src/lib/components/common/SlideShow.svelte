@@ -2,18 +2,17 @@
 	import { onMount } from 'svelte';
 
 	export let imageUrls = [
-		'/assets/images/adam.jpg',
-		'/assets/images/galaxy.jpg',
-		'/assets/images/earth.jpg',
-		'/assets/images/space.jpg'
+		'/assets/images/nchu-gate.jpg'
 	];
 	export let duration = 5000;
 	let selectedImageIdx = 0;
 
 	onMount(() => {
-		setInterval(() => {
-			selectedImageIdx = (selectedImageIdx + 1) % (imageUrls.length - 1);
-		}, duration);
+		if (imageUrls.length > 1) {
+			setInterval(() => {
+				selectedImageIdx = (selectedImageIdx + 1) % imageUrls.length;
+			}, duration);
+		}
 	});
 </script>
 

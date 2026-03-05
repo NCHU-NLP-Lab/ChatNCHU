@@ -356,6 +356,17 @@
 		}
 	});
 
+	// Update TipTap placeholder when the prop changes (e.g. i18n language switch)
+	$: if (editor && placeholder) {
+		const placeholderExt = editor.extensionManager.extensions.find(
+			(ext) => ext.name === 'placeholder'
+		);
+		if (placeholderExt && placeholderExt.options.placeholder !== placeholder) {
+			placeholderExt.options.placeholder = placeholder;
+			editor.view.dispatch(editor.view.state.tr);
+		}
+	}
+
 	// Update the editor content if the external `value` changes
 	$: if (
 		editor &&

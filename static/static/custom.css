@@ -1,0 +1,59 @@
+/* ChatNCHU - 校門背景圖片 */
+
+/* 背景圖片 */
+html {
+    background-image: url('/static/background.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+    background-repeat: no-repeat !important;
+}
+
+/* 深色模式半透明遮罩 */
+html::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* 淺色模式遮罩 */
+html.light::before {
+    background-color: rgba(253, 245, 240, 0.9);
+}
+
+/* ===== 需要透明的容器 ===== */
+
+body {
+    background: transparent !important;
+}
+
+#splash-screen {
+    background: transparent !important;
+}
+
+/* Svelte 根容器 */
+body > div[style*="display: contents"],
+body > div:first-child {
+    background: transparent !important;
+}
+
+/* 主要 app 區域 — v0.6.5: class="app relative" */
+.app {
+    background: transparent !important;
+}
+
+.app > div {
+    background: transparent !important;
+}
+
+/* 登入頁面 */
+#auth-page,
+#auth-page > div:first-child {
+    background: transparent !important;
+}

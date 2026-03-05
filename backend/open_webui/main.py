@@ -78,6 +78,8 @@ from open_webui.routers import (
     utils,
 )
 
+from open_webui.routers.auths import parse_allowed_domains
+
 from open_webui.routers.retrieval import (
     get_embedding_function,
     get_ef,
@@ -293,6 +295,18 @@ from open_webui.config import (
     LDAP_USE_TLS,
     LDAP_CA_CERT_FILE,
     LDAP_CIPHERS,
+    # ChatNCHU Stage 1
+    ALLOWED_EMAIL_DOMAINS,
+    ENABLE_EMAIL_VERIFICATION,
+    SMTP_HOST,
+    SMTP_PORT,
+    SMTP_USER,
+    SMTP_PASSWORD,
+    SMTP_FROM,
+    SMTP_USE_TLS,
+    ENABLE_DEMO_TIME_LIMIT,
+    DEMO_DAILY_LOGIN_LIMIT,
+    DEMO_SESSION_DURATION,
     # Misc
     ENV,
     CACHE_DIR,
@@ -572,6 +586,22 @@ app.state.config.LDAP_SEARCH_FILTERS = LDAP_SEARCH_FILTERS
 app.state.config.LDAP_USE_TLS = LDAP_USE_TLS
 app.state.config.LDAP_CA_CERT_FILE = LDAP_CA_CERT_FILE
 app.state.config.LDAP_CIPHERS = LDAP_CIPHERS
+
+########################################
+# ChatNCHU Stage 1
+########################################
+
+app.state.config.ALLOWED_EMAIL_DOMAINS = ALLOWED_EMAIL_DOMAINS
+app.state.config.ENABLE_EMAIL_VERIFICATION = ENABLE_EMAIL_VERIFICATION
+app.state.config.SMTP_HOST = SMTP_HOST
+app.state.config.SMTP_PORT = SMTP_PORT
+app.state.config.SMTP_USER = SMTP_USER
+app.state.config.SMTP_PASSWORD = SMTP_PASSWORD
+app.state.config.SMTP_FROM = SMTP_FROM
+app.state.config.SMTP_USE_TLS = SMTP_USE_TLS
+app.state.config.ENABLE_DEMO_TIME_LIMIT = ENABLE_DEMO_TIME_LIMIT
+app.state.config.DEMO_DAILY_LOGIN_LIMIT = DEMO_DAILY_LOGIN_LIMIT
+app.state.config.DEMO_SESSION_DURATION = DEMO_SESSION_DURATION
 
 
 app.state.AUTH_TRUSTED_EMAIL_HEADER = WEBUI_AUTH_TRUSTED_EMAIL_HEADER
@@ -1271,6 +1301,9 @@ async def get_app_config(request: Request):
                 for name, config in OAUTH_PROVIDERS.items()
             }
         },
+        "admin_email": app.state.config.ADMIN_EMAIL or (
+            Users.get_first_user().email if Users.get_first_user() else ""
+        ),
         "features": {
             "auth": WEBUI_AUTH,
             "auth_trusted_header": bool(app.state.AUTH_TRUSTED_EMAIL_HEADER),
@@ -1278,6 +1311,9 @@ async def get_app_config(request: Request):
             "enable_api_key": app.state.config.ENABLE_API_KEY,
             "enable_signup": app.state.config.ENABLE_SIGNUP,
             "enable_login_form": app.state.config.ENABLE_LOGIN_FORM,
+            "enable_email_verification": app.state.config.ENABLE_EMAIL_VERIFICATION,
+            "enable_demo_time_limit": app.state.config.ENABLE_DEMO_TIME_LIMIT,
+            "allowed_email_domains": parse_allowed_domains(app.state.config.ALLOWED_EMAIL_DOMAINS) if user_count > 0 else [],
             "enable_websocket": ENABLE_WEBSOCKET_SUPPORT,
             **(
                 {

@@ -19,6 +19,13 @@ from open_webui.models.auths import (
     UserResponse,
 )
 from open_webui.models.users import Users
+from open_webui.models.verification_codes import (
+    VerificationCodes,
+    SendCodeForm,
+    CheckCodeForm,
+    ForgotPasswordForm,
+)
+from open_webui.models.demo_sessions import DemoSessions
 
 from open_webui.constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
 from open_webui.env import (
@@ -44,6 +51,7 @@ from open_webui.utils.auth import (
 )
 from open_webui.utils.webhook import post_webhook
 from open_webui.utils.access_control import get_permissions
+from open_webui.utils.email import send_verification_email
 
 from typing import Optional, List
 
@@ -57,6 +65,24 @@ router = APIRouter()
 
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["MAIN"])
+
+
+def parse_allowed_domains(config_value: str) -> list[str]:
+    """Parse ALLOWED_EMAIL_DOMAINS config and return list of enabled domain strings.
+    Supports both legacy comma-separated format and new JSON format.
+    """
+    if not config_value:
+        return []
+    config_value = config_value.strip()
+    if config_value.startswith("["):
+        import json
+        try:
+            entries = json.loads(config_value)
+            return [e["domain"] for e in entries if e.get("enabled", True)]
+        except (json.JSONDecodeError, KeyError):
+            return []
+    else:
+        return [d.strip() for d in config_value.split(",") if d.strip()]
 
 ############################
 # GetSessionUser
@@ -326,6 +352,199 @@ async def ldap_auth(request: Request, response: Response, form_data: LdapForm):
 
 
 ############################
+# ChatNCHU: Verification Code
+############################
+
+
+@router.post("/verify/send-code")
+async def send_verification_code(
+    request: Request,
+    form_data: SendCodeForm,
+):
+    email = form_data.email.lower()
+    purpose = form_data.purpose
+
+    # Validate email format
+    if not validate_email_format(email):
+        raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_EMAIL_FORMAT)
+
+    # ChatNCHU: Email local part validation (only alphanumeric)
+    local_part = email.split("@")[0]
+    if not re.match(r'^[a-zA-Z0-9]+$', local_part):
+        raise HTTPException(400, detail="Email username can only contain letters and numbers.")
+
+    # Check domain whitelist
+    domains = parse_allowed_domains(request.app.state.config.ALLOWED_EMAIL_DOMAINS)
+    if domains:
+        email_domain = email.split("@")[-1]
+        if email_domain not in domains:
+            raise HTTPException(
+                400,
+                detail=f"Email domain @{email_domain} is not allowed. Allowed domains: {', '.join(domains)}",
+            )
+
+    # For signup: check if email is already registered
+    if purpose == "signup":
+        if Users.get_user_by_email(email):
+            raise HTTPException(400, detail=ERROR_MESSAGES.EMAIL_TAKEN)
+
+    # For password_reset: check if email exists
+    if purpose == "password_reset":
+        if not Users.get_user_by_email(email):
+            raise HTTPException(400, detail="No account found with this email.")
+
+    # Check cooldown (1 minute)
+    if VerificationCodes.check_cooldown(email, purpose, cooldown_seconds=60):
+        raise HTTPException(429, detail="Please wait 60 seconds before requesting a new code.")
+
+    # Create verification code
+    code_entry = VerificationCodes.create_code(email, purpose)
+    if not code_entry:
+        raise HTTPException(500, detail="Failed to create verification code.")
+
+    # Send email
+    smtp_host = request.app.state.config.SMTP_HOST
+    smtp_port = request.app.state.config.SMTP_PORT
+    smtp_user = request.app.state.config.SMTP_USER
+    smtp_password = request.app.state.config.SMTP_PASSWORD
+    smtp_from = request.app.state.config.SMTP_FROM
+    smtp_use_tls = request.app.state.config.SMTP_USE_TLS
+
+    if not smtp_host:
+        raise HTTPException(500, detail="SMTP is not configured. Please contact the administrator.")
+
+    success = send_verification_email(
+        to_email=email,
+        code=code_entry.code,
+        purpose=purpose,
+        smtp_host=smtp_host,
+        smtp_port=smtp_port,
+        smtp_user=smtp_user,
+        smtp_password=smtp_password,
+        smtp_from=smtp_from,
+        smtp_use_tls=smtp_use_tls,
+    )
+
+    if not success:
+        raise HTTPException(500, detail="Failed to send verification email.")
+
+    return {"status": True, "message": "Verification code sent."}
+
+
+@router.post("/verify/check-code")
+async def check_verification_code(
+    form_data: CheckCodeForm,
+):
+    valid = VerificationCodes.verify_code(
+        form_data.email.lower(), form_data.code, form_data.purpose
+    )
+    if not valid:
+        raise HTTPException(400, detail="Invalid or expired verification code.")
+    return {"status": True, "message": "Verification code is valid."}
+
+
+############################
+# ChatNCHU: Forgot Password
+############################
+
+
+@router.post("/forgot-password")
+async def forgot_password(
+    form_data: ForgotPasswordForm,
+):
+    email = form_data.email.lower()
+
+    # Verify the code
+    valid = VerificationCodes.verify_code(email, form_data.code, "password_reset")
+    if not valid:
+        raise HTTPException(400, detail="Invalid or expired verification code.")
+
+    # Find the user
+    user = Users.get_user_by_email(email)
+    if not user:
+        raise HTTPException(400, detail="No account found with this email.")
+
+    # Validate new password
+    if len(form_data.new_password) < 8:
+        raise HTTPException(400, detail="Password must be at least 8 characters.")
+
+    # Update password
+    hashed = get_password_hash(form_data.new_password)
+    result = Auths.update_user_password_by_id(user.id, hashed)
+    if not result:
+        raise HTTPException(500, detail="Failed to update password.")
+
+    # Mark code as used
+    VerificationCodes.mark_code_used(email, form_data.code, "password_reset")
+
+    return {"status": True, "message": "Password has been reset successfully."}
+
+
+############################
+# ChatNCHU: Demo Session
+############################
+
+
+@router.get("/demo-session")
+async def get_demo_session(
+    request: Request,
+    user=Depends(get_current_user),
+):
+    if not request.app.state.config.ENABLE_DEMO_TIME_LIMIT:
+        return {"enabled": False}
+
+    # Admin users are exempt from demo time limit
+    if user.role == "admin":
+        return {"enabled": False}
+
+    daily_limit = request.app.state.config.DEMO_DAILY_LOGIN_LIMIT
+    logins_today = DemoSessions.count_today_sessions(user.id)
+    remaining_logins = max(0, daily_limit - logins_today)
+
+    active = DemoSessions.get_active_session(user.id)
+
+    if active is None:
+        return {
+            "enabled": True,
+            "remaining": None,
+            "has_session": False,
+            "daily_limit": daily_limit,
+            "logins_today": logins_today,
+            "remaining_logins": remaining_logins,
+        }
+
+    remaining = DemoSessions.get_remaining_time(user.id)
+
+    return {
+        "enabled": True,
+        "remaining": remaining,
+        "has_session": True,
+        "expires_at": active.expires_at,
+        "logged_out": active.logged_out,
+        "daily_limit": daily_limit,
+        "logins_today": logins_today,
+        "remaining_logins": remaining_logins,
+    }
+
+
+class ResetDemoSessionForm(BaseModel):
+    user_id: str
+
+
+@router.post("/admin/demo-session/reset")
+async def reset_demo_session(
+    request: Request,
+    form_data: ResetDemoSessionForm,
+    user=Depends(get_admin_user),
+):
+    success = DemoSessions.reset_today_session(form_data.user_id)
+    if success:
+        return {"success": True, "message": "Demo session reset successfully."}
+    else:
+        return {"success": True, "message": "No active session found for today."}
+
+
+############################
 # SignIn
 ############################
 
@@ -369,9 +588,35 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
 
             user = Auths.authenticate_user(admin_email.lower(), admin_password)
     else:
-        user = Auths.authenticate_user(form_data.email.lower(), form_data.password)
+        # ChatNCHU: Allow login by employee_id (no @) or email (contains @)
+        if "@" in form_data.email:
+            user = Auths.authenticate_user(form_data.email.lower(), form_data.password)
+        else:
+            user = Auths.authenticate_user_by_employee_id(
+                form_data.email, form_data.password
+            )
 
     if user:
+        # ChatNCHU: Demo session time limit check
+        if request.app.state.config.ENABLE_DEMO_TIME_LIMIT and user.role != "admin":
+            daily_limit = request.app.state.config.DEMO_DAILY_LOGIN_LIMIT
+            duration = request.app.state.config.DEMO_SESSION_DURATION
+
+            # Check if there's an active (not expired, not logged out) session
+            active_session = DemoSessions.get_active_session(user.id)
+            if active_session:
+                # User has an active session, allow re-login
+                pass
+            else:
+                # No active session — check if user has remaining logins
+                logins_today = DemoSessions.count_today_sessions(user.id)
+                if logins_today >= daily_limit:
+                    raise HTTPException(
+                        403,
+                        detail="You have used all your login sessions for today. Please try again tomorrow.",
+                    )
+                # Create new demo session
+                DemoSessions.create_session(user.id, duration=duration)
 
         expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
         expires_at = None
@@ -446,7 +691,44 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
             status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.INVALID_EMAIL_FORMAT
         )
 
-    if Users.get_user_by_email(form_data.email.lower()):
+    # ChatNCHU: Domain whitelist check (skip for first admin signup)
+    if user_count > 0:
+        domains = parse_allowed_domains(request.app.state.config.ALLOWED_EMAIL_DOMAINS)
+        if domains:
+            email_domain = form_data.email.lower().split("@")[-1]
+            if email_domain not in domains:
+                raise HTTPException(
+                    400,
+                    detail=f"Email domain @{email_domain} is not allowed. Allowed domains: {', '.join(domains)}",
+                )
+
+    # ChatNCHU: Email verification code check
+    if request.app.state.config.ENABLE_EMAIL_VERIFICATION and user_count > 0:
+        if not form_data.verification_code:
+            raise HTTPException(400, detail="Verification code is required.")
+        valid = VerificationCodes.verify_code(
+            form_data.email.lower(), form_data.verification_code, "signup"
+        )
+        if not valid:
+            raise HTTPException(400, detail="Invalid or expired verification code.")
+
+    # ChatNCHU: Employee ID validation
+    if user_count > 0 and not form_data.employee_id:
+        raise HTTPException(400, detail="Employee ID / Student ID is required.")
+
+    if form_data.employee_id:
+        if not re.match(r'^[a-zA-Z0-9]+$', form_data.employee_id):
+            raise HTTPException(400, detail="Employee ID / Student ID can only contain letters and numbers.")
+        if Users.get_user_by_employee_id(form_data.employee_id):
+            raise HTTPException(400, detail="This Employee ID / Student ID is already registered.")
+
+    # ChatNCHU: Email local part validation (only alphanumeric)
+    email_lower = form_data.email.lower()
+    local_part = email_lower.split("@")[0]
+    if not re.match(r'^[a-zA-Z0-9]+$', local_part):
+        raise HTTPException(400, detail="Email username can only contain letters and numbers.")
+
+    if Users.get_user_by_email(email_lower):
         raise HTTPException(400, detail=ERROR_MESSAGES.EMAIL_TAKEN)
 
     try:
@@ -472,9 +754,16 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
             form_data.name,
             form_data.profile_image_url,
             role,
+            employee_id=form_data.employee_id,
         )
 
         if user:
+            # ChatNCHU: Mark verification code as used
+            if request.app.state.config.ENABLE_EMAIL_VERIFICATION and form_data.verification_code:
+                VerificationCodes.mark_code_used(
+                    form_data.email.lower(), form_data.verification_code, "signup"
+                )
+
             expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
             expires_at = None
             if expires_delta:
@@ -537,6 +826,26 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
 
 @router.get("/signout")
 async def signout(request: Request, response: Response):
+    # ChatNCHU: Mark demo session as logged out
+    if request.app.state.config.ENABLE_DEMO_TIME_LIMIT:
+        try:
+            from open_webui.utils.auth import decode_token, get_http_authorization_cred
+            token = None
+            auth_header = request.headers.get("Authorization")
+            if auth_header:
+                auth_cred = get_http_authorization_cred(auth_header)
+                token = auth_cred.credentials
+            else:
+                token = request.cookies.get("token")
+            if token:
+                data = decode_token(token)
+                if data and "id" in data:
+                    user = Users.get_user_by_id(data["id"])
+                    if user and user.role != "admin":
+                        DemoSessions.mark_logged_out(user.id)
+        except Exception:
+            pass
+
     response.delete_cookie("token")
 
     if ENABLE_OAUTH_SIGNUP.value:
@@ -665,6 +974,19 @@ async def get_admin_config(request: Request, user=Depends(get_admin_user)):
         "ENABLE_MESSAGE_RATING": request.app.state.config.ENABLE_MESSAGE_RATING,
         "ENABLE_CHANNELS": request.app.state.config.ENABLE_CHANNELS,
         "ENABLE_USER_WEBHOOKS": request.app.state.config.ENABLE_USER_WEBHOOKS,
+        # ChatNCHU
+        "ALLOWED_EMAIL_DOMAINS": request.app.state.config.ALLOWED_EMAIL_DOMAINS,
+        "ENABLE_EMAIL_VERIFICATION": request.app.state.config.ENABLE_EMAIL_VERIFICATION,
+        "ENABLE_DEMO_TIME_LIMIT": request.app.state.config.ENABLE_DEMO_TIME_LIMIT,
+        "DEMO_DAILY_LOGIN_LIMIT": request.app.state.config.DEMO_DAILY_LOGIN_LIMIT,
+        "DEMO_SESSION_DURATION": request.app.state.config.DEMO_SESSION_DURATION,
+        "SMTP_HOST": request.app.state.config.SMTP_HOST,
+        "SMTP_PORT": request.app.state.config.SMTP_PORT,
+        "SMTP_USER": request.app.state.config.SMTP_USER,
+        "SMTP_PASSWORD": request.app.state.config.SMTP_PASSWORD,
+        "SMTP_FROM": request.app.state.config.SMTP_FROM,
+        "SMTP_USE_TLS": request.app.state.config.SMTP_USE_TLS,
+        "ADMIN_EMAIL": request.app.state.config.ADMIN_EMAIL,
     }
 
 
@@ -681,6 +1003,19 @@ class AdminConfig(BaseModel):
     ENABLE_MESSAGE_RATING: bool
     ENABLE_CHANNELS: bool
     ENABLE_USER_WEBHOOKS: bool
+    # ChatNCHU
+    ALLOWED_EMAIL_DOMAINS: Optional[str] = None
+    ENABLE_EMAIL_VERIFICATION: Optional[bool] = None
+    ENABLE_DEMO_TIME_LIMIT: Optional[bool] = None
+    DEMO_DAILY_LOGIN_LIMIT: Optional[int] = None
+    DEMO_SESSION_DURATION: Optional[int] = None
+    SMTP_HOST: Optional[str] = None
+    SMTP_PORT: Optional[int] = None
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+    SMTP_FROM: Optional[str] = None
+    SMTP_USE_TLS: Optional[bool] = None
+    ADMIN_EMAIL: Optional[str] = None
 
 
 @router.post("/admin/config")
@@ -717,6 +1052,32 @@ async def update_admin_config(
 
     request.app.state.config.ENABLE_USER_WEBHOOKS = form_data.ENABLE_USER_WEBHOOKS
 
+    # ChatNCHU settings
+    if form_data.ALLOWED_EMAIL_DOMAINS is not None:
+        request.app.state.config.ALLOWED_EMAIL_DOMAINS = form_data.ALLOWED_EMAIL_DOMAINS
+    if form_data.ENABLE_EMAIL_VERIFICATION is not None:
+        request.app.state.config.ENABLE_EMAIL_VERIFICATION = form_data.ENABLE_EMAIL_VERIFICATION
+    if form_data.ENABLE_DEMO_TIME_LIMIT is not None:
+        request.app.state.config.ENABLE_DEMO_TIME_LIMIT = form_data.ENABLE_DEMO_TIME_LIMIT
+    if form_data.DEMO_DAILY_LOGIN_LIMIT is not None:
+        request.app.state.config.DEMO_DAILY_LOGIN_LIMIT = form_data.DEMO_DAILY_LOGIN_LIMIT
+    if form_data.DEMO_SESSION_DURATION is not None:
+        request.app.state.config.DEMO_SESSION_DURATION = form_data.DEMO_SESSION_DURATION
+    if form_data.SMTP_HOST is not None:
+        request.app.state.config.SMTP_HOST = form_data.SMTP_HOST
+    if form_data.SMTP_PORT is not None:
+        request.app.state.config.SMTP_PORT = form_data.SMTP_PORT
+    if form_data.SMTP_USER is not None:
+        request.app.state.config.SMTP_USER = form_data.SMTP_USER
+    if form_data.SMTP_PASSWORD is not None:
+        request.app.state.config.SMTP_PASSWORD = form_data.SMTP_PASSWORD
+    if form_data.SMTP_FROM is not None:
+        request.app.state.config.SMTP_FROM = form_data.SMTP_FROM
+    if form_data.SMTP_USE_TLS is not None:
+        request.app.state.config.SMTP_USE_TLS = form_data.SMTP_USE_TLS
+    if form_data.ADMIN_EMAIL is not None:
+        request.app.state.config.ADMIN_EMAIL = form_data.ADMIN_EMAIL
+
     return {
         "SHOW_ADMIN_DETAILS": request.app.state.config.SHOW_ADMIN_DETAILS,
         "WEBUI_URL": request.app.state.config.WEBUI_URL,
@@ -730,6 +1091,19 @@ async def update_admin_config(
         "ENABLE_COMMUNITY_SHARING": request.app.state.config.ENABLE_COMMUNITY_SHARING,
         "ENABLE_MESSAGE_RATING": request.app.state.config.ENABLE_MESSAGE_RATING,
         "ENABLE_USER_WEBHOOKS": request.app.state.config.ENABLE_USER_WEBHOOKS,
+        # ChatNCHU
+        "ALLOWED_EMAIL_DOMAINS": request.app.state.config.ALLOWED_EMAIL_DOMAINS,
+        "ENABLE_EMAIL_VERIFICATION": request.app.state.config.ENABLE_EMAIL_VERIFICATION,
+        "ENABLE_DEMO_TIME_LIMIT": request.app.state.config.ENABLE_DEMO_TIME_LIMIT,
+        "DEMO_DAILY_LOGIN_LIMIT": request.app.state.config.DEMO_DAILY_LOGIN_LIMIT,
+        "DEMO_SESSION_DURATION": request.app.state.config.DEMO_SESSION_DURATION,
+        "SMTP_HOST": request.app.state.config.SMTP_HOST,
+        "SMTP_PORT": request.app.state.config.SMTP_PORT,
+        "SMTP_USER": request.app.state.config.SMTP_USER,
+        "SMTP_PASSWORD": request.app.state.config.SMTP_PASSWORD,
+        "SMTP_FROM": request.app.state.config.SMTP_FROM,
+        "SMTP_USE_TLS": request.app.state.config.SMTP_USE_TLS,
+        "ADMIN_EMAIL": request.app.state.config.ADMIN_EMAIL,
     }
 
 
