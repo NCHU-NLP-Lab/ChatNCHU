@@ -420,6 +420,7 @@
 	"Enable New Sign Ups": "Cho phép đăng ký mới",
 	"Enabled": "Đã bật",
 	"Enforce Temporary Chat": "Bắt buộc Chat nháp",
+	"Ensure your CSV file includes 4 columns in this order: Student/Employee ID, Name, Email, Password.": "Đảm bảo tệp CSV của bạn có 4 cột theo thứ tự: Mã sinh viên/nhân viên, Tên, Email, Mật khẩu.",
 	"Enter 6-digit code": "Nhập mã 6 chữ số",
 	"Enter a detail about yourself for your LLMs to recall": "Nhập chi tiết về bản thân của bạn để LLMs có thể nhớ",
 	"Enter api auth string (e.g. username:password)": "Nhập chuỗi xác thực api (ví dụ: username: mật khẩu)",
@@ -482,6 +483,7 @@
 	"Enter Sougou Search API sID": "",
 	"Enter Sougou Search API SK": "",
 	"Enter stop sequence": "Nhập stop sequence",
+	"Enter Student/Employee ID": "Nhập mã sinh viên/nhân viên",
 	"Enter system prompt": "Nhập system prompt",
 	"Enter system prompt here": "Nhập system prompt tại đây",
 	"Enter Tavily API Key": "Nhập Tavily API Key",
@@ -1044,6 +1046,7 @@
 	"Serpstack API Key": "Khóa API Serpstack",
 	"Server connection verified": "Kết nối máy chủ đã được xác minh",
 	"Session Duration (seconds)": "Thời gian phiên (giây)",
+	"Session Reminder": "Nhắc nhở phiên",
 	"Session Unavailable": "",
 	"Set as default": "Đặt làm mặc định",
 	"Set CFG Scale": "Đặt Thang CFG",
@@ -1335,6 +1338,7 @@
 	"You do not have permission to upload files.": "Bạn không có quyền tải lên tệp.",
 	"You have 15 minutes remaining.": "",
 	"You have 5 minutes remaining!": "",
+	"You have 5 minutes remaining! Please save your work.": "Bạn còn 5 phút! Vui lòng ghi lại thông tin quan trọng. Bạn sẽ tự động đăng xuất khi hết thời gian và không thể xem bất kỳ nội dung nào cho đến lần đăng nhập tiếp theo.",
 	"You have no archived conversations.": "Bạn chưa lưu trữ một nội dung chat nào",
 	"You have shared this chat": "Bạn vừa chia sẻ chat này",
 	"You have used all your login sessions for today. Please try again tomorrow.": "Bạn đã sử dụng hết lượt đăng nhập hôm nay. Vui lòng thử lại vào ngày mai.",
@@ -1353,7 +1357,5 @@
 	"{{COUNT}} hidden lines": "{{COUNT}} dòng bị ẩn",
 	"{{COUNT}} Replies": "{{COUNT}} Trả lời",
 	"{{user}}'s Chats": "Các cuộc trò chuyện của {{user}}",
-	"{{webUIName}} Backend Required": "{{webUIName}} Yêu cầu Backend",
-	"Enter Student/Employee ID": "Nhập mã sinh viên/nhân viên",
-	"Ensure your CSV file includes 4-5 columns in this order: Name, Email, Password, Role, Student/Employee ID (optional).": "Đảm bảo tệp CSV của bạn có 4-5 cột theo thứ tự: Tên, Email, Mật khẩu, Vai trò, Mã sinh viên/nhân viên (tùy chọn)."
+	"{{webUIName}} Backend Required": "{{webUIName}} Yêu cầu Backend"
 }

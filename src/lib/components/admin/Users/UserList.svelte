@@ -219,12 +219,12 @@
 				<th
 					scope="col"
 					class="px-3 py-1.5 cursor-pointer select-none"
-					on:click={() => setSortKey('role')}
+					on:click={() => setSortKey('name')}
 				>
 					<div class="flex gap-1.5 items-center">
-						{$i18n.t('Role')}
+						{$i18n.t('Name')}
 
-						{#if sortKey === 'role'}
+						{#if sortKey === 'name'}
 							<span class="font-normal"
 								>{#if sortOrder === 'asc'}
 									<ChevronUp className="size-2" />
@@ -265,12 +265,12 @@
 				<th
 					scope="col"
 					class="px-3 py-1.5 cursor-pointer select-none"
-					on:click={() => setSortKey('name')}
+					on:click={() => setSortKey('role')}
 				>
 					<div class="flex gap-1.5 items-center">
-						{$i18n.t('Name')}
+						{$i18n.t('Role')}
 
-						{#if sortKey === 'name'}
+						{#if sortKey === 'role'}
 							<span class="font-normal"
 								>{#if sortOrder === 'asc'}
 									<ChevronUp className="size-2" />
@@ -308,7 +308,6 @@
 						{/if}
 					</div>
 				</th>
-
 				<th
 					scope="col"
 					class="px-3 py-1.5 cursor-pointer select-none"
@@ -339,6 +338,7 @@
 				>
 					<div class="flex gap-1.5 items-center">
 						{$i18n.t('Created at')}
+
 						{#if sortKey === 'created_at'}
 							<span class="font-normal"
 								>{#if sortOrder === 'asc'}
@@ -355,22 +355,12 @@
 					</div>
 				</th>
 
-
 				<th scope="col" class="px-3 py-2 text-right" />
 			</tr>
 		</thead>
 		<tbody class="">
 			{#each filteredUsers as user, userIdx}
 				<tr class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs">
-					<td class="px-3 py-1 min-w-[7rem] w-28">
-						<span class="translate-y-0.5 inline-block">
-							<Badge
-								type={user.role === 'admin' ? 'info' : user.role === 'user' ? 'success' : user.role === 'suspended' ? 'error' : 'muted'}
-								content={$i18n.t(user.role)}
-							/>
-						</span>
-					</td>
-					<td class=" px-3 py-1"> {user.employee_id ?? ''} </td>
 					<td class="px-3 py-1 font-medium text-gray-900 dark:text-white w-max">
 						<div class="flex flex-row w-max">
 							<img
@@ -386,16 +376,22 @@
 							<div class=" font-medium self-center">{user.name}</div>
 						</div>
 					</td>
+					<td class=" px-3 py-1"> {user.employee_id ?? ''} </td>
+					<td class="px-3 py-1 min-w-[7rem] w-28">
+						<span class="translate-y-0.5 inline-block">
+							<Badge
+								type={user.role === 'admin' ? 'info' : user.role === 'user' ? 'success' : user.role === 'suspended' ? 'error' : 'muted'}
+								content={$i18n.t(user.role)}
+							/>
+						</span>
+					</td>
 					<td class=" px-3 py-1"> {user.email} </td>
-
 					<td class=" px-3 py-1">
 						{dayjs(user.last_active_at * 1000).fromNow()}
 					</td>
-
 					<td class=" px-3 py-1">
 						{dayjs(user.created_at * 1000).format('LL')}
 					</td>
-
 
 					<td class="px-3 py-1 text-right">
 						<div class="flex justify-end w-full">

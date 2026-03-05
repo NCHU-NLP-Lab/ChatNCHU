@@ -420,6 +420,7 @@
 	"Enable New Sign Ups": "Aktifkan Pendaftaran Baru",
 	"Enabled": "",
 	"Enforce Temporary Chat": "",
+	"Ensure your CSV file includes 4 columns in this order: Student/Employee ID, Name, Email, Password.": "Pastikan file CSV Anda memiliki 4 kolom dalam urutan: NIM/NIP, Nama, Email, Kata Sandi.",
 	"Enter 6-digit code": "Masukkan kode 6 digit",
 	"Enter a detail about yourself for your LLMs to recall": "Masukkan detail tentang diri Anda untuk diingat oleh LLM Anda",
 	"Enter api auth string (e.g. username:password)": "Masukkan string pengesahan API (misalnya nama pengguna: kata sandi)",
@@ -482,6 +483,7 @@
 	"Enter Sougou Search API sID": "",
 	"Enter Sougou Search API SK": "",
 	"Enter stop sequence": "Masukkan urutan berhenti",
+	"Enter Student/Employee ID": "Masukkan NIM/NIP",
 	"Enter system prompt": "",
 	"Enter system prompt here": "",
 	"Enter Tavily API Key": "Masukkan Kunci API Tavily",
@@ -1043,6 +1045,7 @@
 	"Serpstack API Key": "Kunci API Serpstack",
 	"Server connection verified": "Koneksi server diverifikasi",
 	"Session Duration (seconds)": "Durasi Sesi (detik)",
+	"Session Reminder": "Pengingat Sesi",
 	"Session Unavailable": "",
 	"Set as default": "Ditetapkan sebagai default",
 	"Set CFG Scale": "",
@@ -1334,6 +1337,7 @@
 	"You do not have permission to upload files.": "",
 	"You have 15 minutes remaining.": "",
 	"You have 5 minutes remaining!": "",
+	"You have 5 minutes remaining! Please save your work.": "Tersisa 5 menit! Harap catat informasi penting. Anda akan otomatis keluar saat waktu habis dan tidak dapat melihat konten apa pun hingga login berikutnya.",
 	"You have no archived conversations.": "Anda tidak memiliki percakapan yang diarsipkan.",
 	"You have shared this chat": "Anda telah membagikan obrolan ini",
 	"You have used all your login sessions for today. Please try again tomorrow.": "Anda telah menggunakan semua sesi login hari ini. Silakan coba lagi besok.",
@@ -1352,7 +1356,5 @@
 	"{{COUNT}} hidden lines": "",
 	"{{COUNT}} Replies": "",
 	"{{user}}'s Chats": "Obrolan {{user}}",
-	"{{webUIName}} Backend Required": "{{webUIName}} Diperlukan Backend",
-	"Enter Student/Employee ID": "Masukkan NIM/NIP",
-	"Ensure your CSV file includes 4-5 columns in this order: Name, Email, Password, Role, Student/Employee ID (optional).": "Pastikan file CSV Anda memiliki 4-5 kolom dalam urutan: Nama, Email, Kata Sandi, Peran, NIM/NIP (opsional)."
+	"{{webUIName}} Backend Required": "{{webUIName}} Diperlukan Backend"
 }

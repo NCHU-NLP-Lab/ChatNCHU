@@ -9,6 +9,7 @@
 	import { config } from '$lib/stores';
 
 	import Modal from '$lib/components/common/Modal.svelte';
+	import RoleDropdown from '$lib/components/common/RoleDropdown.svelte';
 	import localizedFormat from 'dayjs/plugin/localizedFormat';
 
 	const i18n = getContext('i18n');
@@ -118,36 +119,6 @@
 
 					<div class=" flex flex-col space-y-1.5">
 						<div class="flex flex-col w-full">
-							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Role')}</div>
-
-							<div class="flex-1">
-								<select
-									class="w-full rounded-sm py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500 outline-hidden"
-									bind:value={_user.role}
-									disabled={_user.id == sessionUser.id || _user.id == selectedUser.id && selectedUser.role === 'admin' && sessionUser.role === 'admin'}
-								>
-									<option value="pending" class="text-gray-500">{$i18n.t('pending')}</option>
-									<option value="user" class="text-green-600 dark:text-green-400">{$i18n.t('user')}</option>
-									<option value="admin" class="text-blue-600 dark:text-blue-400">{$i18n.t('admin')}</option>
-									<option value="suspended" class="text-red-600 dark:text-red-400">{$i18n.t('suspended')}</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="flex flex-col w-full">
-							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Student/Employee ID')}</div>
-
-							<div class="flex-1">
-								<input
-									class="w-full rounded-sm py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 outline-hidden"
-									type="text"
-									bind:value={_user.employee_id}
-									autocomplete="off"
-								/>
-							</div>
-						</div>
-
-						<div class="flex flex-col w-full">
 							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Name')}</div>
 
 							<div class="flex-1">
@@ -160,6 +131,34 @@
 								/>
 							</div>
 						</div>
+
+						<hr class="border-gray-100 dark:border-gray-850 w-full" />
+
+						<div class="flex flex-col w-full">
+							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Student/Employee ID')}</div>
+
+							<div class="flex-1">
+								<input
+									class="w-full rounded-sm py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 outline-hidden"
+									type="text"
+									bind:value={_user.employee_id}
+									autocomplete="off"
+									required
+								/>
+							</div>
+						</div>
+
+						<hr class="border-gray-100 dark:border-gray-850 w-full" />
+
+						<div class="flex flex-col w-full">
+							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Role')}</div>
+
+							<div class="flex-1">
+								<RoleDropdown bind:value={_user.role} disabled={_user.id == sessionUser.id || _user.id == selectedUser.id && selectedUser.role === 'admin' && sessionUser.role === 'admin'} />
+							</div>
+						</div>
+
+						<hr class="border-gray-100 dark:border-gray-850 w-full" />
 
 						<div class="flex flex-col w-full">
 							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Email')}</div>
@@ -175,6 +174,8 @@
 								/>
 							</div>
 						</div>
+
+						<hr class="border-gray-100 dark:border-gray-850 w-full" />
 
 						<div class="flex flex-col w-full">
 							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('New Password')}</div>

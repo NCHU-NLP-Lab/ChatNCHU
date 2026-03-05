@@ -299,6 +299,12 @@ async def update_user_by_id(
                     detail=ERROR_MESSAGES.EMAIL_TAKEN,
                 )
 
+        if not form_data.employee_id or not form_data.employee_id.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Employee ID / Student ID is required.",
+            )
+
         if form_data.password:
             hashed = get_password_hash(form_data.password)
             log.debug(f"hashed: {hashed}")

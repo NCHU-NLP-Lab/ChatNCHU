@@ -420,6 +420,7 @@
 	"Enable New Sign Ups": "Enable New Sign Ups",
 	"Enabled": "Enabled",
 	"Enforce Temporary Chat": "Enforce Temporary Chat",
+	"Ensure your CSV file includes 4 columns in this order: Student/Employee ID, Name, Email, Password.": "Ensure your CSV file includes 4 columns in this order: Student/Employee ID, Name, Email, Password.",
 	"Enter 6-digit code": "Enter 6-digit code",
 	"Enter a detail about yourself for your LLMs to recall": "Enter a detail about yourself for your LLMs to recall",
 	"Enter api auth string (e.g. username:password)": "Enter api auth string (e.g. username:password)",
@@ -482,6 +483,7 @@
 	"Enter Sougou Search API sID": "Enter Sougou Search API sID",
 	"Enter Sougou Search API SK": "Enter Sougou Search API SK",
 	"Enter stop sequence": "Enter stop sequence",
+	"Enter Student/Employee ID": "Enter Student/Employee ID",
 	"Enter system prompt": "Enter system prompt",
 	"Enter system prompt here": "Enter system prompt here",
 	"Enter Tavily API Key": "Enter Tavily API Key",
@@ -1044,6 +1046,7 @@
 	"Serpstack API Key": "Serpstack API Key",
 	"Server connection verified": "Server connection verified",
 	"Session Duration (seconds)": "Session Duration (seconds)",
+	"Session Reminder": "Session Reminder",
 	"Session Unavailable": "Session Unavailable",
 	"Set as default": "Set as default",
 	"Set CFG Scale": "Set CFG Scale",
@@ -1335,6 +1338,7 @@
 	"You do not have permission to upload files.": "You do not have permission to upload files.",
 	"You have 15 minutes remaining.": "You have 15 minutes remaining.",
 	"You have 5 minutes remaining!": "You have 5 minutes remaining!",
+	"You have 5 minutes remaining! Please save your work.": "You have 5 minutes remaining! Please note down any important information. You will be automatically logged out when time is up and unable to view any content until your next login.",
 	"You have no archived conversations.": "You have no archived conversations.",
 	"You have shared this chat": "You have shared this chat",
 	"You have used all your login sessions for today. Please try again tomorrow.": "You have used all your login sessions for today. Please try again tomorrow.",
@@ -1353,7 +1357,5 @@
 	"{{COUNT}} hidden lines": "{{COUNT}} hidden lines",
 	"{{COUNT}} Replies": "{{COUNT}} Replies",
 	"{{user}}'s Chats": "{{user}}'s Chats",
-	"{{webUIName}} Backend Required": "{{webUIName}} Backend Required",
-	"Enter Student/Employee ID": "Enter Student/Employee ID",
-	"Ensure your CSV file includes 4-5 columns in this order: Name, Email, Password, Role, Student/Employee ID (optional).": "Ensure your CSV file includes 4-5 columns in this order: Name, Email, Password, Role, Student/Employee ID (optional)."
+	"{{webUIName}} Backend Required": "{{webUIName}} Backend Required"
 }

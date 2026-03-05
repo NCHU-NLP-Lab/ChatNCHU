@@ -1299,5 +1299,5 @@
 	"{{user}}'s Chats": "{{user}} 的对话记录",
 	"{{webUIName}} Backend Required": "{{webUIName}} 需要后端服务",
 	"Enter Student/Employee ID": "输入学号/教职工编号",
-	"Ensure your CSV file includes 4-5 columns in this order: Name, Email, Password, Role, Student/Employee ID (optional).": "请确保 CSV 文件包含 4-5 列，顺序为：姓名、邮箱、密码、角色、学号/教职工编号（选填）。"
+	"Ensure your CSV file includes 4 columns in this order: Student/Employee ID, Name, Email, Password.": "请确保 CSV 文件包含 4 列，顺序为：学号/教职工编号、姓名、邮箱、密码。"
 }

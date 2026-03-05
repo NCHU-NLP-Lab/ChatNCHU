@@ -434,7 +434,6 @@
 										<!-- ChatNCHU: Signup field order: Employee ID -> Name -> Email -> Password -> Verification Code -->
 										
 										<!-- 1. Employee ID / Student ID -->
-										{#if !($config?.onboarding ?? false)}
 											<div class="mb-2">
 												<div class=" text-sm font-medium text-left mb-1">{$i18n.t('Employee ID / Student ID')}</div>
 												<input
@@ -449,7 +448,6 @@
 													<div class="text-xs text-red-500 text-left mt-0.5">{employeeIdError}</div>
 												{/if}
 											</div>
-										{/if}
 										
 										<!-- 2. Name -->
 										<div class="mb-2">

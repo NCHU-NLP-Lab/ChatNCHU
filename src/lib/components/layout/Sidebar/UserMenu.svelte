@@ -166,7 +166,7 @@
 							if (token) {
 								const data = await getDemoSession(token);
 								if (data && data.remaining_logins !== undefined) {
-									remainingLogins = Math.max(0, (data.remaining_logins ?? 0) - 1);
+									remainingLogins = Math.max(0, data.remaining_logins ?? 0);
 								} else {
 									remainingLogins = 0;
 								}

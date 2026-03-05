@@ -420,6 +420,7 @@
 	"Enable New Sign Ups": "新規登録を有効にする",
 	"Enabled": "有効",
 	"Enforce Temporary Chat": "",
+	"Ensure your CSV file includes 4 columns in this order: Student/Employee ID, Name, Email, Password.": "CSVファイルに4列が含まれていることを確認してください。順序：学籍番号/職員番号、名前、メール、パスワード。",
 	"Enter 6-digit code": "6桁のコードを入力",
 	"Enter a detail about yourself for your LLMs to recall": "LLM が記憶するために、自分についての詳細を入力してください",
 	"Enter api auth string (e.g. username:password)": "API AuthStringを入力(例: Username:Password)",
@@ -482,6 +483,7 @@
 	"Enter Sougou Search API sID": "",
 	"Enter Sougou Search API SK": "",
 	"Enter stop sequence": "ストップシーケンスを入力してください",
+	"Enter Student/Employee ID": "学籍番号/職員番号を入力",
 	"Enter system prompt": "システムプロンプト入力",
 	"Enter system prompt here": "",
 	"Enter Tavily API Key": "Tavily API Keyを入力してください。",
@@ -1044,6 +1046,7 @@
 	"Serpstack API Key": "Serpstack APIキー",
 	"Server connection verified": "サーバー接続が確認されました",
 	"Session Duration (seconds)": "セッション時間（秒）",
+	"Session Reminder": "セッションリマインダー",
 	"Session Unavailable": "ログインできません",
 	"Set as default": "デフォルトに設定",
 	"Set CFG Scale": "",
@@ -1335,6 +1338,7 @@
 	"You do not have permission to upload files.": "",
 	"You have 15 minutes remaining.": "残り15分です。",
 	"You have 5 minutes remaining!": "残り5分です！",
+	"You have 5 minutes remaining! Please save your work.": "残り5分です！重要な情報を記録してください。時間切れになると自動的にログアウトされ、次回ログインするまで内容を確認できなくなります。",
 	"You have no archived conversations.": "これまでにアーカイブされた会話はありません。",
 	"You have shared this chat": "このチャットを共有しました",
 	"You have used all your login sessions for today. Please try again tomorrow.": "本日のログイン回数の上限に達しました。明日もう一度お試しください。",
@@ -1353,7 +1357,5 @@
 	"{{COUNT}} hidden lines": "",
 	"{{COUNT}} Replies": "",
 	"{{user}}'s Chats": "{{user}} のチャット",
-	"{{webUIName}} Backend Required": "{{webUIName}} バックエンドが必要です",
-	"Enter Student/Employee ID": "学籍番号/職員番号を入力",
-	"Ensure your CSV file includes 4-5 columns in this order: Name, Email, Password, Role, Student/Employee ID (optional).": "CSVファイルに4〜5列が含まれていることを確認してください。順序：名前、メール、パスワード、役割、学籍番号/職員番号（任意）。"
+	"{{webUIName}} Backend Required": "{{webUIName}} バックエンドが必要です"
 }

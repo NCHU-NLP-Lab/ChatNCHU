@@ -961,6 +961,12 @@ async def add_user(form_data: AddUserForm, user=Depends(get_admin_user)):
     if Users.get_user_by_email(form_data.email.lower()):
         raise HTTPException(400, detail=ERROR_MESSAGES.EMAIL_TAKEN)
 
+    if not form_data.employee_id:
+        raise HTTPException(400, detail="Employee ID / Student ID is required.")
+
+    if Users.get_user_by_employee_id(form_data.employee_id):
+        raise HTTPException(400, detail="This Employee ID / Student ID is already registered.")
+
     try:
         hashed = get_password_hash(form_data.password)
         user = Auths.insert_new_auth(
@@ -969,7 +975,7 @@ async def add_user(form_data: AddUserForm, user=Depends(get_admin_user)):
             form_data.name,
             form_data.profile_image_url,
             form_data.role,
-            employee_id=form_data.employee_id if hasattr(form_data, 'employee_id') else None,
+            employee_id=form_data.employee_id,
         )
 
         if user:

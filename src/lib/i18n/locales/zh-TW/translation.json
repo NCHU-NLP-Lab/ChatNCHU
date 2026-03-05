@@ -420,6 +420,7 @@
 	"Enable New Sign Ups": "允許新使用者註冊",
 	"Enabled": "已啟用",
 	"Enforce Temporary Chat": "強制使用臨時聊天",
+	"Ensure your CSV file includes 4 columns in this order: Student/Employee ID, Name, Email, Password.": "請確保 CSV 檔案包含 4 欄，順序為：學號/教職員編號、姓名、Email、密碼。",
 	"Enter 6-digit code": "請輸入 6 位數驗證碼",
 	"Enter a detail about yourself for your LLMs to recall": "輸入有關您的詳細資訊，讓您的大型語言模型可以回想起來",
 	"Enter api auth string (e.g. username:password)": "輸入 API 驗證字串（例如：username:password）",
@@ -482,6 +483,7 @@
 	"Enter Sougou Search API sID": "輸入 搜狗搜索 API sID",
 	"Enter Sougou Search API SK": "輸入 搜狗搜索 API SK",
 	"Enter stop sequence": "輸入停止序列",
+	"Enter Student/Employee ID": "輸入學號/教職員編號",
 	"Enter system prompt": "輸入系統提示詞",
 	"Enter system prompt here": "在此輸入系統提示詞",
 	"Enter Tavily API Key": "輸入 Tavily API 金鑰",
@@ -1044,6 +1046,7 @@
 	"Serpstack API Key": "Serpstack API 金鑰",
 	"Server connection verified": "伺服器連線已驗證",
 	"Session Duration (seconds)": "每次使用時間（秒）",
+	"Session Reminder": "使用時間提醒",
 	"Session Unavailable": "無法登入",
 	"Set as default": "設為預設",
 	"Set CFG Scale": "設定 CFG 比例",
@@ -1335,6 +1338,7 @@
 	"You do not have permission to upload files.": "您沒有權限上傳檔案。",
 	"You have 15 minutes remaining.": "您的使用時間剩餘 15 分鐘。",
 	"You have 5 minutes remaining!": "您的使用時間僅剩 5 分鐘！",
+	"You have 5 minutes remaining! Please save your work.": "剩餘 5 分鐘！請盡快記錄重要資訊。時間到後將自動登出，您將無法查看任何內容或紀錄，直到下次登入。",
 	"You have no archived conversations.": "您沒有已封存的對話。",
 	"You have shared this chat": "您已分享此對話",
 	"You have used all your login sessions for today. Please try again tomorrow.": "您今天的登入次數已用完，請明天再試。",
@@ -1353,7 +1357,5 @@
 	"{{COUNT}} hidden lines": "已隱藏 {{COUNT}} 行",
 	"{{COUNT}} Replies": "{{COUNT}} 回覆",
 	"{{user}}'s Chats": "{{user}} 的對話",
-	"{{webUIName}} Backend Required": "需要 {{webUIName}} 後端",
-	"Enter Student/Employee ID": "輸入學號/教職員編號",
-	"Ensure your CSV file includes 4-5 columns in this order: Name, Email, Password, Role, Student/Employee ID (optional).": "請確保 CSV 檔案包含 4-5 欄，順序為：姓名、Email、密碼、角色、學號/教職員編號（選填）。"
+	"{{webUIName}} Backend Required": "需要 {{webUIName}} 後端"
 }
