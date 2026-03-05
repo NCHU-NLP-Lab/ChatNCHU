@@ -304,15 +304,27 @@ async def update_user_by_id(
             log.debug(f"hashed: {hashed}")
             Auths.update_user_password_by_id(user_id, hashed)
 
+        if form_data.role and form_data.role in ["pending", "user", "admin", "suspended"]:
+            if user_id != session_user.id and user_id != Users.get_first_user().id:
+                Users.update_user_role_by_id(user_id, form_data.role)
+
         Auths.update_email_by_id(user_id, form_data.email.lower())
-        updated_user = Users.update_user_by_id(
-            user_id,
-            {
-                "name": form_data.name,
-                "email": form_data.email.lower(),
-                "profile_image_url": form_data.profile_image_url,
-            },
-        )
+        update_data = {
+            "name": form_data.name,
+            "email": form_data.email.lower(),
+            "profile_image_url": form_data.profile_image_url,
+        }
+        if form_data.employee_id is not None:
+            new_eid = form_data.employee_id.strip() if form_data.employee_id else None
+            if new_eid and new_eid != user.employee_id:
+                existing = Users.get_user_by_employee_id(new_eid)
+                if existing:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="This Employee ID / Student ID is already registered.",
+                    )
+            update_data["employee_id"] = new_eid
+        updated_user = Users.update_user_by_id(user_id, update_data)
 
         if updated_user:
             return updated_user

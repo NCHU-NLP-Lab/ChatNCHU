@@ -88,8 +88,9 @@
 			} else {
 				let name = user.name.toLowerCase();
 				let email = user.email.toLowerCase();
+				let eid = (user.employee_id || '').toLowerCase();
 				const query = search.toLowerCase();
-				return name.includes(query) || email.includes(query);
+				return name.includes(query) || email.includes(query) || eid.includes(query);
 			}
 		})
 		.sort((a, b) => {
@@ -241,6 +242,29 @@
 				<th
 					scope="col"
 					class="px-3 py-1.5 cursor-pointer select-none"
+					on:click={() => setSortKey('employee_id')}
+				>
+					<div class="flex gap-1.5 items-center">
+						{$i18n.t('Student/Employee ID')}
+
+						{#if sortKey === 'employee_id'}
+							<span class="font-normal"
+								>{#if sortOrder === 'asc'}
+									<ChevronUp className="size-2" />
+								{:else}
+									<ChevronDown className="size-2" />
+								{/if}
+							</span>
+						{:else}
+							<span class="invisible">
+								<ChevronUp className="size-2" />
+							</span>
+						{/if}
+					</div>
+				</th>
+				<th
+					scope="col"
+					class="px-3 py-1.5 cursor-pointer select-none"
 					on:click={() => setSortKey('name')}
 				>
 					<div class="flex gap-1.5 items-center">
@@ -331,29 +355,6 @@
 					</div>
 				</th>
 
-				<th
-					scope="col"
-					class="px-3 py-1.5 cursor-pointer select-none"
-					on:click={() => setSortKey('oauth_sub')}
-				>
-					<div class="flex gap-1.5 items-center">
-						{$i18n.t('OAuth ID')}
-
-						{#if sortKey === 'oauth_sub'}
-							<span class="font-normal"
-								>{#if sortOrder === 'asc'}
-									<ChevronUp className="size-2" />
-								{:else}
-									<ChevronDown className="size-2" />
-								{/if}
-							</span>
-						{:else}
-							<span class="invisible">
-								<ChevronUp className="size-2" />
-							</span>
-						{/if}
-					</div>
-				</th>
 
 				<th scope="col" class="px-3 py-2 text-right" />
 			</tr>
@@ -362,24 +363,14 @@
 			{#each filteredUsers as user, userIdx}
 				<tr class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs">
 					<td class="px-3 py-1 min-w-[7rem] w-28">
-						<button
-							class=" translate-y-0.5"
-							on:click={() => {
-								if (user.role === 'user') {
-									updateRoleHandler(user.id, 'admin');
-								} else if (user.role === 'pending') {
-									updateRoleHandler(user.id, 'user');
-								} else {
-									updateRoleHandler(user.id, 'pending');
-								}
-							}}
-						>
+						<span class="translate-y-0.5 inline-block">
 							<Badge
-								type={user.role === 'admin' ? 'info' : user.role === 'user' ? 'success' : 'muted'}
+								type={user.role === 'admin' ? 'info' : user.role === 'user' ? 'success' : user.role === 'suspended' ? 'error' : 'muted'}
 								content={$i18n.t(user.role)}
 							/>
-						</button>
+						</span>
 					</td>
+					<td class=" px-3 py-1"> {user.employee_id ?? ''} </td>
 					<td class="px-3 py-1 font-medium text-gray-900 dark:text-white w-max">
 						<div class="flex flex-row w-max">
 							<img
@@ -405,7 +396,6 @@
 						{dayjs(user.created_at * 1000).format('LL')}
 					</td>
 
-					<td class=" px-3 py-1"> {user.oauth_sub ?? ''} </td>
 
 					<td class="px-3 py-1 text-right">
 						<div class="flex justify-end w-full">
@@ -482,32 +472,5 @@
 	</table>
 </div>
 
-<div class=" text-gray-500 text-xs mt-1.5 text-right">
-	ⓘ {$i18n.t("Click on the user role button to change a user's role.")}
-</div>
-
 <Pagination bind:page count={users.length} />
 
-{#if !$config?.license_metadata}
-	{#if users.length > 50}
-		<div class="text-sm">
-			<Markdown
-				content={`
-> [!NOTE]
-> # **Hey there! 👋**
->
-> It looks like you have over 50 users — that usually falls under organizational usage.
-> 
-> Open WebUI is proudly open source and completely free, with no hidden limits — and we'd love to keep it that way. 🌱  
->
-> By supporting the project through sponsorship or an enterprise license, you’re not only helping us stay independent, you’re also helping us ship new features faster, improve stability, and grow the project for the long haul. With an *enterprise license*, you also get additional perks like dedicated support, customization options, and more — all at a fraction of what it would cost to build and maintain internally.  
-> 
-> Your support helps us stay independent and continue building great tools for everyone. 💛
-> 
-> - 👉 **[Click here to learn more about enterprise licensing](https://docs.openwebui.com/enterprise)**
-> - 👉 *[Click here to sponsor the project on GitHub](https://github.com/sponsors/tjbck)*
-`}
-			/>
-		</div>
-	{/if}
-{/if}

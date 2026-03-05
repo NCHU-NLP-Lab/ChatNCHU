@@ -39,7 +39,15 @@
 		}
 	};
 
+	const defaultDemoLimits = {
+		enable_demo_time_limit: false,
+		demo_daily_login_limit: 1,
+		demo_session_duration: 7200
+	};
+
 	export let permissions = {};
+
+	export let custom = true;
 
 	// Reactive statement to ensure all fields are present in `permissions`
 	$: {
@@ -47,7 +55,7 @@
 	}
 
 	function fillMissingProperties(obj: any, defaults: any) {
-		return {
+		const result: any = {
 			...defaults,
 			...obj,
 			workspace: { ...defaults.workspace, ...obj.workspace },
@@ -55,6 +63,12 @@
 			chat: { ...defaults.chat, ...obj.chat },
 			features: { ...defaults.features, ...obj.features }
 		};
+		if (custom && obj.demo_limits) {
+			result.demo_limits = { ...defaultDemoLimits, ...obj.demo_limits };
+		} else if (custom) {
+			result.demo_limits = { ...defaultDemoLimits };
+		}
+		return result;
 	}
 
 	onMount(() => {
@@ -363,4 +377,50 @@
 			<Switch bind:state={permissions.features.code_interpreter} />
 		</div>
 	</div>
+
+
+	{#if custom}
+		<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+
+		<div>
+			<div class=" mb-2 text-sm font-medium">{$i18n.t('Demo Time Limit')}</div>
+
+			<div class="  flex w-full justify-between my-2 pr-2">
+				<div class=" self-center text-xs font-medium">
+					{$i18n.t('Enable Daily Login Limit')}
+				</div>
+				<Switch bind:state={permissions.demo_limits.enable_demo_time_limit} />
+			</div>
+
+			{#if permissions.demo_limits.enable_demo_time_limit}
+				<div class="  flex w-full justify-between items-center my-2 pr-2">
+					<div class=" self-center text-xs font-medium">
+						{$i18n.t('Daily Login Count')}
+					</div>
+					<input
+						class="w-20 text-right text-sm rounded-lg bg-transparent outline-hidden"
+						type="number"
+						min="1"
+						max="100"
+						bind:value={permissions.demo_limits.demo_daily_login_limit}
+					/>
+				</div>
+
+				<div class="  flex w-full justify-between items-center my-2 pr-2">
+					<div class=" self-center text-xs font-medium">
+						{$i18n.t('Session Duration (seconds)')}
+					</div>
+					<input
+						class="w-20 text-right text-sm rounded-lg bg-transparent outline-hidden"
+						type="number"
+						min="60"
+						max="86400"
+						bind:value={permissions.demo_limits.demo_session_duration}
+					/>
+				</div>
+			{/if}
+		</div>
+	{/if}
+
 </div>
+

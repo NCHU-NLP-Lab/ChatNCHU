@@ -23,7 +23,9 @@
 		profile_image_url: '',
 		name: '',
 		email: '',
-		password: ''
+		password: '',
+		role: '',
+		employee_id: ''
 	};
 
 	const submitHandler = async () => {
@@ -116,16 +118,31 @@
 
 					<div class=" flex flex-col space-y-1.5">
 						<div class="flex flex-col w-full">
-							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Email')}</div>
+							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Role')}</div>
+
+							<div class="flex-1">
+								<select
+									class="w-full rounded-sm py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500 outline-hidden"
+									bind:value={_user.role}
+									disabled={_user.id == sessionUser.id || _user.id == selectedUser.id && selectedUser.role === 'admin' && sessionUser.role === 'admin'}
+								>
+									<option value="pending" class="text-gray-500">{$i18n.t('pending')}</option>
+									<option value="user" class="text-green-600 dark:text-green-400">{$i18n.t('user')}</option>
+									<option value="admin" class="text-blue-600 dark:text-blue-400">{$i18n.t('admin')}</option>
+									<option value="suspended" class="text-red-600 dark:text-red-400">{$i18n.t('suspended')}</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="flex flex-col w-full">
+							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Student/Employee ID')}</div>
 
 							<div class="flex-1">
 								<input
-									class="w-full rounded-sm py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500 outline-hidden"
-									type="email"
-									bind:value={_user.email}
+									class="w-full rounded-sm py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 outline-hidden"
+									type="text"
+									bind:value={_user.employee_id}
 									autocomplete="off"
-									required
-									disabled={_user.id == sessionUser.id}
 								/>
 							</div>
 						</div>
@@ -140,6 +157,21 @@
 									bind:value={_user.name}
 									autocomplete="off"
 									required
+								/>
+							</div>
+						</div>
+
+						<div class="flex flex-col w-full">
+							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Email')}</div>
+
+							<div class="flex-1">
+								<input
+									class="w-full rounded-sm py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500 outline-hidden"
+									type="email"
+									bind:value={_user.email}
+									autocomplete="off"
+									required
+									disabled={_user.id == sessionUser.id}
 								/>
 							</div>
 						</div>

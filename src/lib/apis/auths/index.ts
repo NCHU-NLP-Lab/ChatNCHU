@@ -358,7 +358,8 @@ export const addUser = async (
 	name: string,
 	email: string,
 	password: string,
-	role: string = 'pending'
+	role: string = 'pending',
+	employee_id: string = ''
 ) => {
 	let error = null;
 
@@ -372,7 +373,8 @@ export const addUser = async (
 			name: name,
 			email: email,
 			password: password,
-			role: role
+			role: role,
+			employee_id: employee_id || undefined
 		})
 	})
 		.then(async (res) => {

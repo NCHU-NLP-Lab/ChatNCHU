@@ -4,6 +4,8 @@
 
 	const i18n = getContext('i18n');
 
+	export let role = 'pending';
+
 	let adminDetails = null;
 
 	onMount(async () => {
@@ -12,25 +14,39 @@
 			return null;
 		});
 	});
+
+	$: isSuspended = role === 'suspended';
 </script>
 
 <div class="fixed w-full h-full flex z-999">
 	<div
-		class="absolute w-full h-full backdrop-blur-lg bg-white/10 dark:bg-gray-900/50 flex justify-center"
+		class="absolute w-full h-full backdrop-blur-lg {isSuspended
+			? 'bg-red-500/10 dark:bg-red-900/30'
+			: 'bg-white/10 dark:bg-gray-900/50'} flex justify-center"
 	>
 		<div class="m-auto pb-10 flex flex-col justify-center">
 			<div class="max-w-md">
-				<div class="text-center dark:text-white text-2xl font-medium z-50">
-					{$i18n.t('Account Activation Pending')}<br />
-					{$i18n.t('Contact Admin for WebUI Access')}
-				</div>
+				{#if isSuspended}
+					<div class="text-center text-red-600 dark:text-red-400 text-2xl font-medium z-50">
+						{$i18n.t('Account Suspended')}
+					</div>
 
-				<div class=" mt-4 text-center text-sm dark:text-gray-200 w-full">
-					{$i18n.t('Your account status is currently pending activation.')}<br />
-					{$i18n.t(
-						'To access the WebUI, please reach out to the administrator. Admins can manage user statuses from the Admin Panel.'
-					)}
-				</div>
+					<div class=" mt-4 text-center text-sm dark:text-gray-200 w-full">
+						{$i18n.t('Your account has been suspended by the administrator.')}
+					</div>
+				{:else}
+					<div class="text-center dark:text-white text-2xl font-medium z-50">
+						{$i18n.t('Account Activation Pending')}<br />
+						{$i18n.t('Contact Admin for Access')}
+					</div>
+
+					<div class=" mt-4 text-center text-sm dark:text-gray-200 w-full">
+						{$i18n.t('Your account status is currently pending activation.')}<br />
+						{$i18n.t(
+							'To access ChatNCHU, please reach out to the administrator. Admins can manage user statuses from the Admin Panel.'
+						)}
+					</div>
+				{/if}
 
 				{#if adminDetails}
 					<div class="mt-4 text-sm font-medium text-center">

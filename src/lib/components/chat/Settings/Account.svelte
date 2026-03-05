@@ -269,6 +269,7 @@
 			<UpdatePassword />
 		</div>
 
+		{#if $user?.role === 'admin' || $config?.features?.enable_api_key}
 		<hr class="border-gray-50 dark:border-gray-850 my-2" />
 
 		<div class="flex justify-between items-center text-sm">
@@ -284,6 +285,7 @@
 
 		{#if showAPIKeys}
 			<div class="flex flex-col gap-4">
+				{#if $user?.role === 'admin'}
 				<div class="justify-between w-full">
 					<div class="flex justify-between w-full">
 						<div class="self-center text-xs font-medium">{$i18n.t('JWT Token')}</div>
@@ -337,7 +339,8 @@
 						</button>
 					</div>
 				</div>
-				{#if $config?.features?.enable_api_key ?? true}
+				{/if}
+				{#if $config?.features?.enable_api_key}
 					<div class="justify-between w-full">
 						<div class="flex justify-between w-full">
 							<div class="self-center text-xs font-medium">{$i18n.t('API Key')}</div>
@@ -429,6 +432,7 @@
 					</div>
 				{/if}
 			</div>
+		{/if}
 		{/if}
 	</div>
 

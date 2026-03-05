@@ -26,6 +26,7 @@ from open_webui.models.verification_codes import (
     ForgotPasswordForm,
 )
 from open_webui.models.demo_sessions import DemoSessions
+from open_webui.models.groups import Groups
 
 from open_webui.constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
 from open_webui.env import (
@@ -485,19 +486,83 @@ async def forgot_password(
 ############################
 
 
+def get_user_demo_limits(user_id: str, app_config) -> dict:
+    """
+    Get effective demo limits for a user.
+    Group settings override global settings.
+    If user is in multiple groups with demo_limits, use the most permissive values:
+    - If any group disables the limit, it's disabled
+    - Use the highest daily_limit across groups
+    - Use the longest session_duration across groups
+    Returns: { enabled, daily_limit, session_duration }
+    """
+    global_enabled = app_config.ENABLE_DEMO_TIME_LIMIT
+    global_daily = app_config.DEMO_DAILY_LOGIN_LIMIT
+    global_duration = app_config.DEMO_SESSION_DURATION
+
+    user_groups = Groups.get_groups_by_member_id(user_id)
+    if not user_groups:
+        return {
+            "enabled": global_enabled,
+            "daily_limit": global_daily,
+            "session_duration": global_duration,
+        }
+
+    # Check if any group has demo_limits configured
+    groups_with_limits = []
+    for group in user_groups:
+        dl = (group.permissions or {}).get("demo_limits")
+        if dl:
+            groups_with_limits.append(dl)
+
+    if not groups_with_limits:
+        return {
+            "enabled": global_enabled,
+            "daily_limit": global_daily,
+            "session_duration": global_duration,
+        }
+
+    # Merge: group > global, most permissive across groups
+    enabled = True
+    daily_limit = 0
+    session_duration = 0
+
+    for dl in groups_with_limits:
+        e = dl.get("enable_demo_time_limit")
+        if e is False:
+            enabled = False
+        d = dl.get("demo_daily_login_limit")
+        if d is not None and d > daily_limit:
+            daily_limit = d
+        s = dl.get("demo_session_duration")
+        if s is not None and s > session_duration:
+            session_duration = s
+
+    # If any group disables, disabled
+    if not enabled:
+        return {"enabled": False, "daily_limit": 0, "session_duration": 0}
+
+    return {
+        "enabled": True,
+        "daily_limit": daily_limit if daily_limit > 0 else global_daily,
+        "session_duration": session_duration if session_duration > 0 else global_duration,
+    }
+
+
 @router.get("/demo-session")
 async def get_demo_session(
     request: Request,
     user=Depends(get_current_user),
 ):
-    if not request.app.state.config.ENABLE_DEMO_TIME_LIMIT:
-        return {"enabled": False}
-
     # Admin users are exempt from demo time limit
     if user.role == "admin":
         return {"enabled": False}
 
-    daily_limit = request.app.state.config.DEMO_DAILY_LOGIN_LIMIT
+    limits = get_user_demo_limits(user.id, request.app.state.config)
+    if not limits["enabled"]:
+        return {"enabled": False}
+
+    daily_limit = limits["daily_limit"]
     logins_today = DemoSessions.count_today_sessions(user.id)
     remaining_logins = max(0, daily_limit - logins_today)
 
@@ -598,25 +663,27 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
 
     if user:
         # ChatNCHU: Demo session time limit check
-        if request.app.state.config.ENABLE_DEMO_TIME_LIMIT and user.role != "admin":
-            daily_limit = request.app.state.config.DEMO_DAILY_LOGIN_LIMIT
-            duration = request.app.state.config.DEMO_SESSION_DURATION
+        if user.role != "admin":
+            limits = get_user_demo_limits(user.id, request.app.state.config)
+            if limits["enabled"]:
+                daily_limit = limits["daily_limit"]
+                duration = limits["session_duration"]
 
-            # Check if there's an active (not expired, not logged out) session
-            active_session = DemoSessions.get_active_session(user.id)
-            if active_session:
-                # User has an active session, allow re-login
-                pass
-            else:
-                # No active session — check if user has remaining logins
-                logins_today = DemoSessions.count_today_sessions(user.id)
-                if logins_today >= daily_limit:
-                    raise HTTPException(
-                        403,
-                        detail="You have used all your login sessions for today. Please try again tomorrow.",
-                    )
-                # Create new demo session
-                DemoSessions.create_session(user.id, duration=duration)
+                # Check if there's an active (not expired, not logged out) session
+                active_session = DemoSessions.get_active_session(user.id)
+                if active_session:
+                    # User has an active session, allow re-login
+                    pass
+                else:
+                    # No active session — check if user has remaining logins
+                    logins_today = DemoSessions.count_today_sessions(user.id)
+                    if logins_today >= daily_limit:
+                        raise HTTPException(
+                            403,
+                            detail="You have used all your login sessions for today. Please try again tomorrow.",
+                        )
+                    # Create new demo session
+                    DemoSessions.create_session(user.id, duration=duration)
 
         expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
         expires_at = None
@@ -754,7 +821,7 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
             form_data.name,
             form_data.profile_image_url,
             role,
-            employee_id=form_data.employee_id,
+            employee_id=form_data.employee_id if form_data.employee_id else (form_data.name if user_count == 0 else None),
         )
 
         if user:
@@ -827,24 +894,25 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
 @router.get("/signout")
 async def signout(request: Request, response: Response):
     # ChatNCHU: Mark demo session as logged out
-    if request.app.state.config.ENABLE_DEMO_TIME_LIMIT:
-        try:
-            from open_webui.utils.auth import decode_token, get_http_authorization_cred
-            token = None
-            auth_header = request.headers.get("Authorization")
-            if auth_header:
-                auth_cred = get_http_authorization_cred(auth_header)
-                token = auth_cred.credentials
-            else:
-                token = request.cookies.get("token")
-            if token:
-                data = decode_token(token)
-                if data and "id" in data:
-                    user = Users.get_user_by_id(data["id"])
-                    if user and user.role != "admin":
+    try:
+        from open_webui.utils.auth import decode_token, get_http_authorization_cred
+        token = None
+        auth_header = request.headers.get("Authorization")
+        if auth_header:
+            auth_cred = get_http_authorization_cred(auth_header)
+            token = auth_cred.credentials
+        else:
+            token = request.cookies.get("token")
+        if token:
+            data = decode_token(token)
+            if data and "id" in data:
+                user = Users.get_user_by_id(data["id"])
+                if user and user.role != "admin":
+                    limits = get_user_demo_limits(user.id, request.app.state.config)
+                    if limits["enabled"]:
                         DemoSessions.mark_logged_out(user.id)
-        except Exception:
-            pass
+    except Exception:
+        pass
 
     response.delete_cookie("token")
 
@@ -901,6 +969,7 @@ async def add_user(form_data: AddUserForm, user=Depends(get_admin_user)):
             form_data.name,
             form_data.profile_image_url,
             form_data.role,
+            employee_id=form_data.employee_id if hasattr(form_data, 'employee_id') else None,
         )
 
         if user:
@@ -1214,7 +1283,7 @@ async def update_ldap_config(
 # create api key
 @router.post("/api_key", response_model=ApiKey)
 async def generate_api_key(request: Request, user=Depends(get_current_user)):
-    if not request.app.state.config.ENABLE_API_KEY:
+    if not request.app.state.config.ENABLE_API_KEY and user.role != "admin":
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             detail=ERROR_MESSAGES.API_KEY_CREATION_NOT_ALLOWED,
@@ -1233,14 +1302,24 @@ async def generate_api_key(request: Request, user=Depends(get_current_user)):
 
 # delete api key
 @router.delete("/api_key", response_model=bool)
-async def delete_api_key(user=Depends(get_current_user)):
+async def delete_api_key(request: Request, user=Depends(get_current_user)):
+    if not request.app.state.config.ENABLE_API_KEY and user.role != "admin":
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            detail=ERROR_MESSAGES.API_KEY_CREATION_NOT_ALLOWED,
+        )
     success = Users.update_user_api_key_by_id(user.id, None)
     return success
 
 
 # get api key
 @router.get("/api_key", response_model=ApiKey)
-async def get_api_key(user=Depends(get_current_user)):
+async def get_api_key(request: Request, user=Depends(get_current_user)):
+    if not request.app.state.config.ENABLE_API_KEY and user.role != "admin":
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            detail=ERROR_MESSAGES.API_KEY_NOT_FOUND,
+        )
     api_key = Users.get_user_api_key_by_id(user.id)
     if api_key:
         return {

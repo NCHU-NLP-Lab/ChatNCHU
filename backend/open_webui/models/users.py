@@ -35,7 +35,7 @@ class User(Base):
 
     oauth_sub = Column(Text, unique=True)
 
-    employee_id = Column(String(50), nullable=True)
+    employee_id = Column(String(50), nullable=True, unique=True)
 
 
 class UserSettings(BaseModel):
@@ -96,6 +96,8 @@ class UserUpdateForm(BaseModel):
     email: str
     profile_image_url: str
     password: Optional[str] = None
+    role: Optional[str] = None
+    employee_id: Optional[str] = None
 
 
 class UsersTable:

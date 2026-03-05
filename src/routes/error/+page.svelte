@@ -27,14 +27,14 @@
 
 					<div class=" mt-4 text-center text-sm w-full">
 						{$i18n.t(
-							"Oops! You're using an unsupported method (frontend only). Please serve the WebUI from the backend."
+							"Oops! You're using an unsupported method (frontend only). Please serve ChatNCHU from the backend."
 						)}
 
 						<br class=" " />
 						<br class=" " />
 						<a
 							class=" font-semibold underline"
-							href="https://github.com/open-webui/open-webui#how-to-install-"
+							href="https://github.com/NCHU-NLP-Lab/ChatNCHU"
 							target="_blank">{$i18n.t('See readme.md for instructions')}</a
 						>
 						{$i18n.t('or')}

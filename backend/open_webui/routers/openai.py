@@ -217,7 +217,7 @@ async def speech(request: Request, user=Depends(get_verified_user)):
                     **(
                         {
                             "HTTP-Referer": "https://openwebui.com/",
-                            "X-Title": "Open WebUI",
+                            "X-Title": "ChatNCHU",
                         }
                         if "openrouter.ai" in url
                         else {}
@@ -384,7 +384,7 @@ async def get_filtered_models(models, user):
     return filtered_models
 
 
-@cached(ttl=1)
+@cached(ttl=300, key="openai_models")
 async def get_all_models(request: Request, user: UserModel) -> dict[str, list]:
     log.info("get_all_models()")
 
@@ -707,7 +707,7 @@ async def generate_chat_completion(
                 **(
                     {
                         "HTTP-Referer": "https://openwebui.com/",
-                        "X-Title": "Open WebUI",
+                        "X-Title": "ChatNCHU",
                     }
                     if "openrouter.ai" in url
                     else {}

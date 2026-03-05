@@ -1091,6 +1091,12 @@ async def get_models(request: Request, user=Depends(get_verified_user)):
 
 @app.get("/api/models/base")
 async def get_base_models(request: Request, user=Depends(get_admin_user)):
+    # Clear the OpenAI models cache so admin always sees fresh data
+    try:
+        from open_webui.routers.openai import get_all_models as openai_get_all_models
+        await openai_get_all_models.cache.clear()
+    except Exception:
+        pass
     models = await get_all_base_models(request, user=user)
     return {"data": models}
 

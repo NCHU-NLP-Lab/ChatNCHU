@@ -21,7 +21,8 @@
 		name: '',
 		email: '',
 		password: '',
-		role: 'user'
+		role: 'user',
+		employee_id: ''
 	};
 
 	$: if (show) {
@@ -29,7 +30,8 @@
 			name: '',
 			email: '',
 			password: '',
-			role: 'user'
+			role: 'user',
+			employee_id: ''
 		};
 	}
 
@@ -47,7 +49,8 @@
 				_user.name,
 				_user.email,
 				_user.password,
-				_user.role
+				_user.role,
+				_user.employee_id
 			).catch((error) => {
 				toast.error(`${error}`);
 			});
@@ -75,15 +78,16 @@
 
 						if (idx > 0) {
 							if (
-								columns.length === 4 &&
-								['admin', 'user', 'pending'].includes(columns[3].toLowerCase())
+								(columns.length === 4 || columns.length === 5) &&
+								['admin', 'user', 'pending', 'suspended'].includes(columns[3].toLowerCase())
 							) {
 								const res = await addUser(
 									localStorage.token,
 									columns[0],
 									columns[1],
 									columns[2],
-									columns[3].toLowerCase()
+									columns[3].toLowerCase(),
+									columns.length === 5 ? columns[4] : ''
 								).catch((error) => {
 									toast.error(`Row ${idx + 1}: ${error}`);
 									return null;
@@ -181,19 +185,36 @@
 
 								<div class="flex-1">
 									<select
-										class="w-full capitalize rounded-lg text-sm bg-transparent dark:disabled:text-gray-500 outline-hidden"
+										class="w-full capitalize rounded-lg text-sm bg-transparent dark:bg-gray-800 dark:disabled:text-gray-500 outline-hidden"
 										bind:value={_user.role}
 										placeholder={$i18n.t('Enter Your Role')}
 										required
 									>
-										<option value="pending"> {$i18n.t('pending')} </option>
-										<option value="user"> {$i18n.t('user')} </option>
-										<option value="admin"> {$i18n.t('admin')} </option>
+										<option value="pending" class="text-gray-500"> {$i18n.t('pending')} </option>
+										<option value="user" class="text-green-600 dark:text-green-400"> {$i18n.t('user')} </option>
+										<option value="admin" class="text-blue-600 dark:text-blue-400"> {$i18n.t('admin')} </option>
+										<option value="suspended" class="text-red-600 dark:text-red-400"> {$i18n.t('suspended')} </option>
 									</select>
 								</div>
 							</div>
 
 							<div class="flex flex-col w-full mt-1">
+								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Student/Employee ID')}</div>
+
+								<div class="flex-1">
+									<input
+										class="w-full text-sm bg-transparent disabled:text-gray-500 dark:disabled:text-gray-500 outline-hidden"
+										type="text"
+										bind:value={_user.employee_id}
+										placeholder={$i18n.t('Enter Student/Employee ID')}
+										autocomplete="off"
+									/>
+								</div>
+							</div>
+
+							<hr class=" border-gray-100 dark:border-gray-850 my-2.5 w-full" />
+
+							<div class="flex flex-col w-full">
 								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Name')}</div>
 
 								<div class="flex-1">
@@ -265,7 +286,7 @@
 
 								<div class=" text-xs text-gray-500">
 									ⓘ {$i18n.t(
-										'Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.'
+										'Ensure your CSV file includes 4-5 columns in this order: Name, Email, Password, Role, Student/Employee ID (optional).'
 									)}
 									<a
 										class="underline dark:text-gray-200"

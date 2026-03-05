@@ -35,6 +35,8 @@
 	import Eye from '$lib/components/icons/Eye.svelte';
 
 	let shiftKey = false;
+	let bulkToggling = false;
+	let bulkToggleTarget = null;
 
 	let importFiles;
 	let modelsImportInputElement: HTMLInputElement;
@@ -166,6 +168,8 @@
 		const toToggle = models.filter((m) => (m.is_active ?? true) !== enable);
 		if (toToggle.length === 0) return;
 
+		bulkToggling = true;
+		bulkToggleTarget = enable;
 		const BATCH_SIZE = 20;
 		for (let i = 0; i < toToggle.length; i += BATCH_SIZE) {
 			const batch = toToggle.slice(i, i + BATCH_SIZE);
@@ -197,6 +201,9 @@
 			)
 		);
 		await init();
+		await tick();
+		bulkToggling = false;
+		bulkToggleTarget = null;
 	};
 
 	const hideModelHandler = async (model) => {
@@ -274,6 +281,35 @@
 				</div>
 
 				<div class="flex items-center gap-1.5">
+					{#if $user?.role === 'admin'}
+						<button
+							class="text-xs px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+							type="button"
+							disabled={bulkToggling}
+							on:click={() => toggleAllModels(true)}
+						>
+							{#if bulkToggling && bulkToggleTarget === true}
+								<Spinner className="size-3" />
+								{$i18n.t('Processing...')}
+							{:else}
+								{$i18n.t('Enable All')}
+							{/if}
+						</button>
+						<button
+							class="text-xs px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+							type="button"
+							disabled={bulkToggling}
+							on:click={() => toggleAllModels(false)}
+						>
+							{#if bulkToggling && bulkToggleTarget === false}
+								<Spinner className="size-3" />
+								{$i18n.t('Processing...')}
+							{:else}
+								{$i18n.t('Disable All')}
+							{/if}
+						</button>
+					{/if}
+
 					<Tooltip content={$i18n.t('Manage Models')}>
 						<button
 							class=" p-1 rounded-full flex gap-1 items-center"
@@ -313,24 +349,6 @@
 				</div>
 			</div>
 
-			{#if $user?.role === 'admin'}
-				<div class="flex items-center gap-1">
-					<button
-						class="text-xs px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 font-medium transition"
-						type="button"
-						on:click={() => toggleAllModels(true)}
-					>
-						{$i18n.t('Enable All')}
-					</button>
-					<button
-						class="text-xs px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 font-medium transition"
-						type="button"
-						on:click={() => toggleAllModels(false)}
-					>
-						{$i18n.t('Disable All')}
-					</button>
-				</div>
-			{/if}
 		</div>
 
 		<div class=" my-2 mb-5" id="model-list">
@@ -456,7 +474,7 @@
 										<Switch
 											bind:state={model.is_active}
 											on:change={async () => {
-												toggleModelHandler(model);
+												if (!bulkToggling) toggleModelHandler(model);
 											}}
 										/>
 									</Tooltip>

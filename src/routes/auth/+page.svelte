@@ -17,6 +17,7 @@
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import OnBoarding from '$lib/components/OnBoarding.svelte';
 	import LanguageSwitcher from '$lib/components/common/LanguageSwitcher.svelte';
+	import ThemeSwitcher from '$lib/components/common/ThemeSwitcher.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -332,14 +333,15 @@
 	<div class="w-full absolute top-0 left-0 right-0 h-8 drag-region" />
 
 	{#if loaded}
-		<div class="fixed top-4 right-4 z-[60]">
+		<div class="fixed top-4 right-4 z-[60] flex items-center gap-2">
+			<ThemeSwitcher />
 			<LanguageSwitcher />
 		</div>
 
 		<div
 			class="fixed bg-transparent min-h-screen w-full flex justify-center font-primary z-50 text-black dark:text-white"
 		>
-			<div class="w-full sm:max-w-md px-10 min-h-screen flex flex-col text-center">
+			<div class="w-full sm:max-w-lg px-10 min-h-screen flex flex-col text-center">
 				{#if ($config?.features.auth_trusted_header ?? false) || $config?.features.auth === false}
 					<div class=" my-auto pb-10 w-full">
 						<div
@@ -361,7 +363,7 @@
 							id="logo"
 							crossorigin="anonymous"
 							src="{WEBUI_BASE_URL}/static/splash.png"
-							class="w-40 rounded-2xl"
+							class="w-60 mt-4 rounded-2xl"
 							alt="logo"
 						/>
 					</div>
@@ -407,7 +409,7 @@
 											<input
 												bind:value={ldapUsername}
 												type="text"
-												class="my-0.5 w-full text-sm outline-hidden bg-transparent"
+												class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder-gray-400 dark:placeholder-gray-500"
 												autocomplete="username"
 												name="username"
 												placeholder={$i18n.t('Enter Your Username')}
@@ -421,7 +423,7 @@
 											<input
 												bind:value={email}
 												type="text"
-												class="my-0.5 w-full text-sm outline-hidden bg-transparent"
+												class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder-gray-400 dark:placeholder-gray-500"
 												autocomplete="email"
 												name="email"
 												placeholder={$i18n.t('Enter Your Email or Student ID')}
@@ -438,7 +440,7 @@
 												<input
 													bind:value={employeeId}
 													type="text"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent"
+													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder-gray-400 dark:placeholder-gray-500"
 													placeholder={$i18n.t('Enter Your Employee ID or Student ID')}
 													on:input={validateEmployeeId}
 													required
@@ -455,7 +457,7 @@
 											<input
 												bind:value={name}
 												type="text"
-												class="my-0.5 w-full text-sm outline-hidden bg-transparent"
+												class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder-gray-400 dark:placeholder-gray-500"
 												autocomplete="name"
 												placeholder={$i18n.t('Enter Your Full Name')}
 												required
@@ -470,7 +472,7 @@
 													<input
 														bind:value={emailLocal}
 														type="text"
-														class="my-0.5 w-full text-sm outline-hidden bg-transparent"
+														class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder-gray-400 dark:placeholder-gray-500"
 														placeholder={$i18n.t('Username')}
 														on:input={validateEmailLocal}
 														required
@@ -478,7 +480,7 @@
 													<span class="text-sm text-gray-500 shrink-0">@</span>
 													<select
 														bind:value={selectedDomain}
-														class="my-0.5 text-sm outline-hidden bg-transparent dark:bg-transparent"
+														class="my-0.5 text-sm outline-hidden bg-transparent dark:bg-gray-900 dark:text-gray-200"
 													>
 														{#each allowedDomains as domain}
 															<option value={domain}>{domain}</option>
@@ -492,7 +494,7 @@
 												<input
 													bind:value={email}
 													type="email"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent"
+													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder-gray-400 dark:placeholder-gray-500"
 													autocomplete="email"
 													name="email"
 													placeholder={$i18n.t('Enter Your Email')}
@@ -509,7 +511,7 @@
 											<input
 												bind:value={password}
 												type="password"
-												class="my-0.5 w-full text-sm outline-hidden bg-transparent"
+												class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder-gray-400 dark:placeholder-gray-500"
 												placeholder={$i18n.t('Enter Your Password')}
 												autocomplete="current-password"
 												name="current-password"
@@ -526,7 +528,7 @@
 													bind:value={verificationCode}
 													type="text"
 													maxlength="6"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent"
+													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder-gray-400 dark:placeholder-gray-500"
 													placeholder={$i18n.t('Enter 6-digit code')}
 													required
 												/>
@@ -550,14 +552,14 @@
 								{#if $config?.features.enable_login_form || $config?.features.enable_ldap}
 									{#if mode === 'ldap'}
 										<button
-											class="bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="bg-gray-700/20 hover:bg-gray-700/30 dark:bg-gray-100/20 dark:hover:bg-gray-100/30 dark:text-gray-100 transition w-full rounded-full font-medium text-sm py-2.5"
 											type="submit"
 										>
 											{$i18n.t('Authenticate')}
 										</button>
 									{:else}
 										<button
-											class="bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="bg-gray-700/20 hover:bg-gray-700/30 dark:bg-gray-100/20 dark:hover:bg-gray-100/30 dark:text-gray-100 transition w-full rounded-full font-medium text-sm py-2.5"
 											type="submit"
 											disabled={hasValidationError}
 										>
@@ -714,17 +716,17 @@
 						{/if}
 
 						{#if showDemoBlockedModal}
-							<div class="fixed inset-0 z-[100] flex items-center justify-center bg-red-950/60">
-								<div class="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-xl text-center">
+							<div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
+								<div class="bg-white dark:bg-gray-900 border border-red-300 dark:border-red-700 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-xl text-center">
 									<div class="flex justify-center mb-4">
 										<svg xmlns="http://www.w3.org/2000/svg" class="size-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
 											<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
 										</svg>
 									</div>
-									<h3 class="text-lg font-semibold mb-2 text-red-800 dark:text-red-200">
+									<h3 class="text-lg font-semibold mb-2 text-red-600 dark:text-red-400">
 										{$i18n.t('Session Unavailable')}
 									</h3>
-									<p class="text-sm text-red-600 dark:text-red-300 mb-6 leading-relaxed">
+									<p class="text-sm text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
 										{demoBlockedMessage}
 									</p>
 									<button
@@ -872,7 +874,8 @@
 					</div>
 
 					<!-- Fixed footer at bottom -->
-					<div class="flex-shrink-0 pb-4 pt-2 text-xs text-gray-400 dark:text-gray-500 text-center leading-relaxed">
+					<div class="flex-shrink-0 pb-4 pt-2 text-xs text-black/70 dark:text-white/70 text-center leading-relaxed">
+						<div>© Maintained by <a href="https://nlpnchu.org/" target="_blank" rel="noopener" class="hover:underline">NCHU NLP Lab</a></div>
 						<div>
 							{$i18n.t('Technical issues')}: <a href="mailto:nlpnchu@gmail.com" class="hover:underline">nlpnchu@gmail.com</a>
 							{#if $config?.admin_email}
@@ -880,7 +883,6 @@
 								{$i18n.t('Account issues')}: <a href="mailto:{$config.admin_email}" class="hover:underline">{$config.admin_email}</a>
 							{/if}
 						</div>
-						<div>© Maintained by <a href="https://nlpnchu.org/" target="_blank" rel="noopener" class="hover:underline">NCHU NLP Lab</a></div>
 					</div>
 				{/if}
 			</div>

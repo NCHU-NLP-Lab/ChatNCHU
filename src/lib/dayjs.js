@@ -99,6 +99,8 @@ import 'dayjs/locale/uz';
 import 'dayjs/locale/vi';
 import 'dayjs/locale/yo';
 import 'dayjs/locale/zh';
+import 'dayjs/locale/zh-cn';
+import 'dayjs/locale/zh-tw';
 import 'dayjs/locale/et';
 
 export default dayjs;
