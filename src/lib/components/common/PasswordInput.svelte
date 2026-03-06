@@ -19,17 +19,31 @@
 </script>
 
 <div class="relative w-full">
-	<input
-		bind:value
-		type={showPassword ? 'text' : 'password'}
-		class="{className} pr-8"
-		{placeholder}
-		{autocomplete}
-		{name}
-		{required}
-		on:keydown={handleKeyEvent}
-		on:keyup={handleKeyEvent}
-	/>
+	{#if showPassword}
+		<input
+			bind:value
+			type="text"
+			class="{className} pr-8"
+			{placeholder}
+			{autocomplete}
+			{name}
+			{required}
+			on:keydown={handleKeyEvent}
+			on:keyup={handleKeyEvent}
+		/>
+	{:else}
+		<input
+			bind:value
+			type="password"
+			class="{className} pr-8"
+			{placeholder}
+			{autocomplete}
+			{name}
+			{required}
+			on:keydown={handleKeyEvent}
+			on:keyup={handleKeyEvent}
+		/>
+	{/if}
 
 	<button
 		type="button"
