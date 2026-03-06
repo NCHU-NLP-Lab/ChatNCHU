@@ -52,7 +52,7 @@
 				<div class="flex flex-col items-center mb-4">
 					<img
 						crossorigin="anonymous"
-						src="{WEBUI_BASE_URL}/static/static/splash.png"
+						src="{WEBUI_BASE_URL}/static/splash.png"
 						class="w-20 rounded-2xl mb-4"
 						alt="logo"
 					/>

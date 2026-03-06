@@ -667,13 +667,6 @@
 
 					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
 						<div class="self-center text-xs font-medium">
-							{$i18n.t('Enable Email Verification')}
-						</div>
-						<Switch bind:state={adminConfig.ENABLE_EMAIL_VERIFICATION} />
-					</div>
-
-					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
-						<div class="self-center text-xs font-medium">
 							{$i18n.t('Enable Daily Login Time Limit')}
 						</div>
 						<Switch bind:state={adminConfig.ENABLE_DEMO_TIME_LIMIT} />
@@ -700,6 +693,13 @@
 							/>
 						</div>
 					{/if}
+
+					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
+						<div class="self-center text-xs font-medium">
+							{$i18n.t('Enable Email Verification')}
+						</div>
+						<Switch bind:state={adminConfig.ENABLE_EMAIL_VERIFICATION} />
+					</div>
 
 					{#if adminConfig.ENABLE_EMAIL_VERIFICATION}
 						<div class="mt-3 mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400">{$i18n.t('SMTP Configuration')}</div>
@@ -737,6 +737,7 @@
 							<div class="mb-1 text-xs font-medium">{$i18n.t('SMTP Password')}</div>
 							<SensitiveInput
 								bind:value={adminConfig.SMTP_PASSWORD}
+								inputClassName="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 							/>
 						</div>
 

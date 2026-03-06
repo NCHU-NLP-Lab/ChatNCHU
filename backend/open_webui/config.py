@@ -311,7 +311,7 @@ class AppConfig:
 ENABLE_API_KEY = PersistentConfig(
     "ENABLE_API_KEY",
     "auth.api_key.enable",
-    os.environ.get("ENABLE_API_KEY", "True").lower() == "true",
+    os.environ.get("ENABLE_API_KEY", "False").lower() == "true",
 )
 
 ENABLE_API_KEY_ENDPOINT_RESTRICTIONS = PersistentConfig(
@@ -784,7 +784,7 @@ CACHE_DIR.mkdir(parents=True, exist_ok=True)
 ENABLE_DIRECT_CONNECTIONS = PersistentConfig(
     "ENABLE_DIRECT_CONNECTIONS",
     "direct.enable",
-    os.environ.get("ENABLE_DIRECT_CONNECTIONS", "True").lower() == "true",
+    os.environ.get("ENABLE_DIRECT_CONNECTIONS", "False").lower() == "true",
 )
 
 ####################################
