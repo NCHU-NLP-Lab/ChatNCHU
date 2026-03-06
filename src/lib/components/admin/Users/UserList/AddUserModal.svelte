@@ -8,6 +8,7 @@
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import RoleDropdown from '$lib/components/common/RoleDropdown.svelte';
+	import PasswordInput from '$lib/components/common/PasswordInput.svelte';
 
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
@@ -246,9 +247,8 @@
 								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Password')}</div>
 
 								<div class="flex-1">
-									<input
-										class="w-full text-sm bg-transparent outline-hidden"
-										type="password"
+									<PasswordInput
+										className="w-full text-sm bg-transparent outline-hidden"
 										bind:value={_user.password}
 										placeholder={$i18n.t('Enter Your Password')}
 										autocomplete="off"

@@ -31,12 +31,14 @@
 - **Email-verified registration** — 6-digit verification code via SMTP
 - **Forgot password** — 3-step reset flow (email → code → new password)
 - **Email domain whitelist** — restrict registration to specific domains (e.g. `nchu.edu.tw`)
-- **Employee / Student ID** — campus user identification field, supports login by ID
-- **Demo session time limit** — daily login count + session duration countdown + auto-logout
+- **Employee / Student ID** — required unique identifier for all users, supports login by ID
+- **Demo session time limit** — daily login count + session duration countdown + modal warnings (15 min / 5 min) + auto-logout
 - **Admin email on login page** — configurable contact info displayed in footer
 - **LanguageSwitcher** — 7 languages (zh-TW, en-US, ja-JP, ko-KR, vi-VN, th-TH, id-ID)
 - **Model management** — batch enable/disable, active-first sorting, auto-assign logos
 - **Campus branding** — custom logo, campus gate background, branded onboarding
+- **Admin user management** — custom RoleDropdown with colored role badges, CSV batch import (4-column), suspended role support
+- **Password UX** — show/hide toggle + Caps Lock warning on all password fields
 
 ## Quick Start
 

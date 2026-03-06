@@ -97,7 +97,7 @@
 	<div
 		class="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-mono shadow-lg
 		{remaining <= 300
-			? 'bg-red-600 text-white animate-pulse'
+			? 'text-white demo-timer-blink'
 			: remaining <= 900
 				? 'bg-yellow-500 text-black'
 				: 'bg-gray-800 text-white dark:bg-gray-700'}"
@@ -168,3 +168,18 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	.demo-timer-blink {
+		animation: timer-blink 1s ease-in-out infinite;
+	}
+
+	@keyframes timer-blink {
+		0%, 100% {
+			background-color: rgb(220, 38, 38);
+		}
+		50% {
+			background-color: rgb(127, 29, 29);
+		}
+	}
+</style>

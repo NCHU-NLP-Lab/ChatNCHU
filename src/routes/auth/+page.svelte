@@ -1,6 +1,8 @@
 <script>
 	import { toast } from 'svelte-sonner';
 
+	import PasswordInput from '$lib/components/common/PasswordInput.svelte';
+
 	import { onMount, getContext, tick } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -506,10 +508,9 @@
 										<div>
 											<div class=" text-sm font-medium text-left mb-1">{$i18n.t('Password')}</div>
 											
-											<input
+											<PasswordInput
 												bind:value={password}
-												type="password"
-												class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder-gray-400 dark:placeholder-gray-500"
+												className="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder-gray-400 dark:placeholder-gray-500"
 												placeholder={$i18n.t('Enter Your Password')}
 												autocomplete="current-password"
 												name="current-password"
@@ -672,20 +673,18 @@
 										<div class="space-y-3">
 											<div>
 												<div class="text-sm font-medium text-left mb-1 text-gray-700 dark:text-gray-300">{$i18n.t('New Password')}</div>
-												<input
+												<PasswordInput
 													bind:value={fpNewPassword}
-													type="password"
-													class="w-full text-sm border rounded-lg px-3 py-2 bg-transparent dark:border-gray-600 text-black dark:text-white"
+													className="w-full text-sm border rounded-lg px-3 py-2 bg-transparent dark:border-gray-600 text-black dark:text-white"
 													placeholder={$i18n.t('Enter New Password')}
 													required
 												/>
 											</div>
 											<div>
 												<div class="text-sm font-medium text-left mb-1 text-gray-700 dark:text-gray-300">{$i18n.t('Confirm Password')}</div>
-												<input
+												<PasswordInput
 													bind:value={fpConfirmPassword}
-													type="password"
-													class="w-full text-sm border rounded-lg px-3 py-2 bg-transparent dark:border-gray-600 text-black dark:text-white"
+													className="w-full text-sm border rounded-lg px-3 py-2 bg-transparent dark:border-gray-600 text-black dark:text-white"
 													placeholder={$i18n.t('Confirm New Password')}
 													required
 												/>

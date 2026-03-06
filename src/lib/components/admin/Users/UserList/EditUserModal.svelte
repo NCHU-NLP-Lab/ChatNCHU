@@ -10,6 +10,7 @@
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import RoleDropdown from '$lib/components/common/RoleDropdown.svelte';
+	import PasswordInput from '$lib/components/common/PasswordInput.svelte';
 	import localizedFormat from 'dayjs/plugin/localizedFormat';
 
 	const i18n = getContext('i18n');
@@ -181,9 +182,8 @@
 							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('New Password')}</div>
 
 							<div class="flex-1">
-								<input
-									class="w-full rounded-sm py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 outline-hidden"
-									type="password"
+								<PasswordInput
+									className="w-full rounded-sm py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 outline-hidden"
 									bind:value={_user.password}
 									autocomplete="new-password"
 								/>
