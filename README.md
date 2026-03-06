@@ -10,6 +10,11 @@
 </p>
 
 <p align="center">
+  <a href="https://hub.docker.com/r/nchunlplab/chatnchu"><img src="https://img.shields.io/docker/v/nchunlplab/chatnchu?label=Docker%20Hub&logo=docker" alt="Docker Hub" /></a>
+  <a href="https://github.com/NCHU-NLP-Lab/ChatNCHU/actions"><img src="https://img.shields.io/github/actions/workflow/status/NCHU-NLP-Lab/ChatNCHU/docker-publish.yml?label=CI&logo=github" alt="CI" /></a>
+</p>
+
+<p align="center">
   <img src="./static/assets/images/nchu-gate.jpg" alt="NCHU Campus" width="600" />
 </p>
 
@@ -42,6 +47,29 @@
 
 ## Quick Start
 
+### Using Docker Hub (recommended)
+
+```bash
+docker run -d -p 3000:8080 -v chatnchu-data:/app/backend/data --name chatnchu nchunlplab/chatnchu:latest
+```
+
+Or with `docker compose`:
+
+```yaml
+services:
+  chatnchu:
+    image: nchunlplab/chatnchu:latest
+    ports:
+      - "3000:8080"
+    volumes:
+      - chatnchu-data:/app/backend/data
+
+volumes:
+  chatnchu-data:
+```
+
+### Build from source
+
 ```bash
 git clone git@github.com:NCHU-NLP-Lab/ChatNCHU.git
 cd ChatNCHU
@@ -50,7 +78,7 @@ docker compose up -d --build
 
 Access at http://localhost:3000 — the first registered user becomes admin.
 
-> **Note:** This repo contains the application source code. For production deployment configuration (docker-compose overrides, `.env`, reverse proxy), see the separate deploy repo.
+> **Note:** For production deployment configuration (`.env`, reverse proxy, etc.), see the separate deploy repo.
 
 ## Admin Panel Configuration
 
