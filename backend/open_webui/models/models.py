@@ -1,9 +1,14 @@
 import logging
+import os
 import time
 from typing import Optional
 
 from open_webui.internal.db import Base, JSONField, get_db
 from open_webui.env import SRC_LOG_LEVELS
+
+_ENABLED_MODELS: set[str] = set(
+    m.strip() for m in os.environ.get("ENABLED_MODELS", "").split(",") if m.strip()
+)
 
 from open_webui.models.users import Users, UserResponse
 
@@ -146,14 +151,16 @@ class ModelsTable:
     def insert_new_model(
         self, form_data: ModelForm, user_id: str
     ) -> Optional[ModelModel]:
-        model = ModelModel(
-            **{
-                **form_data.model_dump(),
-                "user_id": user_id,
-                "created_at": int(time.time()),
-                "updated_at": int(time.time()),
-            }
-        )
+        model_data = {
+            **form_data.model_dump(),
+            "user_id": user_id,
+            "created_at": int(time.time()),
+            "updated_at": int(time.time()),
+        }
+        # Auto-enable if model ID is in ENABLED_MODELS env var (first creation only)
+        if _ENABLED_MODELS and form_data.id in _ENABLED_MODELS:
+            model_data["is_active"] = True
+        model = ModelModel(**model_data)
         try:
             with get_db() as db:
                 result = Model(**model.model_dump())
