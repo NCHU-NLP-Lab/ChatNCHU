@@ -93,7 +93,7 @@
 						id: m.id,
 						name: m.name,
 
-						is_active: true
+						is_active: false
 					};
 				}
 			})

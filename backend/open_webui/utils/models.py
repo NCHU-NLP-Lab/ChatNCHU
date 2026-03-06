@@ -10,7 +10,9 @@ from open_webui.functions import get_function_models
 
 
 from open_webui.models.functions import Functions
-from open_webui.models.models import Models
+from open_webui.models.models import (
+    Models, ModelForm, ModelMeta, ModelParams, _ENABLED_MODELS,
+)
 
 
 from open_webui.utils.plugin import load_function_module_by_id
@@ -111,6 +113,8 @@ async def get_all_models(request, user: UserModel = None):
     ]
 
     custom_models = Models.get_all_models()
+    # Collect IDs of active base-model overrides so we know which API models to keep
+    active_model_ids = set()
     for custom_model in custom_models:
         if custom_model.base_model_id is None:
             for model in models:
@@ -122,6 +126,7 @@ async def get_all_models(request, user: UserModel = None):
                     ]  # Ollama may return model ids in different formats (e.g., 'llama3' vs. 'llama3:7b')
                 ):
                     if custom_model.is_active:
+                        active_model_ids.add(model["id"])
                         model["name"] = custom_model.name
                         model["info"] = custom_model.model_dump()
 
@@ -170,6 +175,39 @@ async def get_all_models(request, user: UserModel = None):
                     "action_ids": action_ids,
                 }
             )
+
+    # Auto-create DB entries for API models that have no DB entry yet
+    # - ENABLED_MODELS: is_active=True, access_control=None (public)
+    # - Others: is_active=False, access_control={} (private)
+    custom_model_ids = {cm.id for cm in custom_models}
+    for model in models:
+        if model.get("preset") or model.get("arena"):
+            continue
+        if model["id"] not in custom_model_ids:
+            is_enabled = model["id"] in _ENABLED_MODELS
+            form = ModelForm(
+                id=model["id"],
+                name=model.get("name", model["id"]),
+                meta=ModelMeta(),
+                params=ModelParams(),
+                base_model_id=None,
+                is_active=is_enabled,
+                access_control=None if is_enabled else {},
+            )
+            new_model = Models.insert_new_model(
+                form, user_id=user.id if user else ""
+            )
+            if new_model:
+                custom_model_ids.add(model["id"])
+                if is_enabled:
+                    active_model_ids.add(model["id"])
+                model["info"] = new_model.model_dump()
+
+    # Remove inactive models (both pre-existing and newly created)
+    models = [
+        m for m in models
+        if m.get("preset") or m.get("arena") or m["id"] in active_model_ids
+    ]
 
     # Process action_ids to get the actions
     def get_action_items_from_module(function, module):
