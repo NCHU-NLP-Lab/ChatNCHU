@@ -375,18 +375,16 @@ async def send_verification_code(
     if not re.match(r'^[a-zA-Z0-9]+$', local_part):
         raise HTTPException(400, detail="Email username can only contain letters and numbers.")
 
-    # Check domain whitelist
-    domains = parse_allowed_domains(request.app.state.config.ALLOWED_EMAIL_DOMAINS)
-    if domains:
-        email_domain = email.split("@")[-1]
-        if email_domain not in domains:
-            raise HTTPException(
-                400,
-                detail=f"Email domain @{email_domain} is not allowed. Allowed domains: {', '.join(domains)}",
-            )
-
-    # For signup: check if email is already registered
+    # For signup: check domain whitelist and if email is already registered
     if purpose == "signup":
+        domains = parse_allowed_domains(request.app.state.config.ALLOWED_EMAIL_DOMAINS)
+        if domains:
+            email_domain = email.split("@")[-1]
+            if email_domain not in domains:
+                raise HTTPException(
+                    400,
+                    detail=f"Email domain @{email_domain} is not allowed. Allowed domains: {', '.join(domains)}",
+                )
         if Users.get_user_by_email(email):
             raise HTTPException(400, detail=ERROR_MESSAGES.EMAIL_TAKEN)
 
