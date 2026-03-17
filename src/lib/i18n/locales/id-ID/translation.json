@@ -1088,7 +1088,7 @@
 	"Sign in to {{WEBUI_NAME}} with LDAP": "Masuk ke {{WEBUI_NAME}} dengan LDAP",
 	"Sign Out": "Keluar",
 	"Sign up": "Daftar",
-	"Sign up to {{WEBUI_NAME}}": "",
+	"Sign up to {{WEBUI_NAME}}": "Daftar ke {{WEBUI_NAME}}",
 	"Signing in to {{WEBUI_NAME}}": "",
 	"sk-1234": "",
 	"SMTP Configuration": "Konfigurasi SMTP",

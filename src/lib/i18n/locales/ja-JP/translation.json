@@ -1089,7 +1089,7 @@
 	"Sign in to {{WEBUI_NAME}} with LDAP": "LDAP で {{WEBUI_NAME}} にサインイン",
 	"Sign Out": "サインアウト",
 	"Sign up": "サインアップ",
-	"Sign up to {{WEBUI_NAME}}": "",
+	"Sign up to {{WEBUI_NAME}}": "{{WEBUI_NAME}} にサインアップ",
 	"Signing in to {{WEBUI_NAME}}": "",
 	"sk-1234": "",
 	"SMTP Configuration": "SMTP 設定",
