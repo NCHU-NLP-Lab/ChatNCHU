@@ -1089,17 +1089,18 @@ async def get_admin_config(request: Request, user=Depends(get_admin_user)):
 
 class AdminConfig(BaseModel):
     SHOW_ADMIN_DETAILS: bool
-    WEBUI_URL: str
     ENABLE_SIGNUP: bool
-    ENABLE_API_KEY: bool
-    ENABLE_API_KEY_ENDPOINT_RESTRICTIONS: bool
-    API_KEY_ALLOWED_ENDPOINTS: str
     DEFAULT_USER_ROLE: str
-    JWT_EXPIRES_IN: str
-    ENABLE_COMMUNITY_SHARING: bool
-    ENABLE_MESSAGE_RATING: bool
-    ENABLE_CHANNELS: bool
-    ENABLE_USER_WEBHOOKS: bool
+    # Super admin only fields (Optional so limited admin can omit them)
+    WEBUI_URL: Optional[str] = None
+    ENABLE_API_KEY: Optional[bool] = None
+    ENABLE_API_KEY_ENDPOINT_RESTRICTIONS: Optional[bool] = None
+    API_KEY_ALLOWED_ENDPOINTS: Optional[str] = None
+    JWT_EXPIRES_IN: Optional[str] = None
+    ENABLE_COMMUNITY_SHARING: Optional[bool] = None
+    ENABLE_MESSAGE_RATING: Optional[bool] = None
+    ENABLE_CHANNELS: Optional[bool] = None
+    ENABLE_USER_WEBHOOKS: Optional[bool] = None
     # ChatNCHU
     ALLOWED_EMAIL_DOMAINS: Optional[str] = None
     ENABLE_EMAIL_VERIFICATION: Optional[bool] = None
@@ -1140,25 +1141,34 @@ async def update_admin_config(
 
     # Super admin only fields
     if user.role == "super_admin":
-        request.app.state.config.WEBUI_URL = form_data.WEBUI_URL
-        request.app.state.config.ENABLE_API_KEY = form_data.ENABLE_API_KEY
-        request.app.state.config.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS = (
-            form_data.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS
-        )
-        request.app.state.config.API_KEY_ALLOWED_ENDPOINTS = (
-            form_data.API_KEY_ALLOWED_ENDPOINTS
-        )
-        request.app.state.config.ENABLE_CHANNELS = form_data.ENABLE_CHANNELS
+        if form_data.WEBUI_URL is not None:
+            request.app.state.config.WEBUI_URL = form_data.WEBUI_URL
+        if form_data.ENABLE_API_KEY is not None:
+            request.app.state.config.ENABLE_API_KEY = form_data.ENABLE_API_KEY
+        if form_data.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS is not None:
+            request.app.state.config.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS = (
+                form_data.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS
+            )
+        if form_data.API_KEY_ALLOWED_ENDPOINTS is not None:
+            request.app.state.config.API_KEY_ALLOWED_ENDPOINTS = (
+                form_data.API_KEY_ALLOWED_ENDPOINTS
+            )
+        if form_data.ENABLE_CHANNELS is not None:
+            request.app.state.config.ENABLE_CHANNELS = form_data.ENABLE_CHANNELS
 
-        pattern = r"^(-1|0|(-?\d+(\.\d+)?)(ms|s|m|h|d|w))$"
-        if re.match(pattern, form_data.JWT_EXPIRES_IN):
-            request.app.state.config.JWT_EXPIRES_IN = form_data.JWT_EXPIRES_IN
+        if form_data.JWT_EXPIRES_IN is not None:
+            pattern = r"^(-1|0|(-?\d+(\.\d+)?)(ms|s|m|h|d|w))$"
+            if re.match(pattern, form_data.JWT_EXPIRES_IN):
+                request.app.state.config.JWT_EXPIRES_IN = form_data.JWT_EXPIRES_IN
 
-        request.app.state.config.ENABLE_COMMUNITY_SHARING = (
-            form_data.ENABLE_COMMUNITY_SHARING
-        )
-        request.app.state.config.ENABLE_MESSAGE_RATING = form_data.ENABLE_MESSAGE_RATING
-        request.app.state.config.ENABLE_USER_WEBHOOKS = form_data.ENABLE_USER_WEBHOOKS
+        if form_data.ENABLE_COMMUNITY_SHARING is not None:
+            request.app.state.config.ENABLE_COMMUNITY_SHARING = (
+                form_data.ENABLE_COMMUNITY_SHARING
+            )
+        if form_data.ENABLE_MESSAGE_RATING is not None:
+            request.app.state.config.ENABLE_MESSAGE_RATING = form_data.ENABLE_MESSAGE_RATING
+        if form_data.ENABLE_USER_WEBHOOKS is not None:
+            request.app.state.config.ENABLE_USER_WEBHOOKS = form_data.ENABLE_USER_WEBHOOKS
 
         if form_data.ENABLE_EMAIL_VERIFICATION is not None:
             request.app.state.config.ENABLE_EMAIL_VERIFICATION = form_data.ENABLE_EMAIL_VERIFICATION

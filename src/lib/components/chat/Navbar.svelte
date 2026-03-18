@@ -50,7 +50,7 @@
 	let showDownloadChatModal = false;
 
 	$: canToggleTemporaryChat =
-		$user?.role === 'admin' ||
+		$user?.role === 'super_admin' ||
 		(($user?.permissions?.chat?.temporary ?? true) &&
 			!($user?.permissions?.chat?.temporary_enforced ?? false));
 
@@ -176,7 +176,7 @@
 						</button>
 					</Tooltip>
 
-					{#if $user?.role === 'admin' || $user?.permissions?.chat?.controls}
+					{#if $user?.role === 'super_admin' || $user?.permissions?.chat?.controls}
 						<Tooltip content={$i18n.t('Controls')}>
 							<button
 								class=" flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
