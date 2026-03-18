@@ -1037,7 +1037,7 @@ async def get_admin_details(request: Request, user=Depends(get_current_user)):
                 admin_name = admin.name
 
         return {
-            "name": admin_name,
+            "name": admin_name or "",
             "email": admin_email,
         }
     else:
