@@ -17,6 +17,7 @@
 		getArchivedChatList
 	} from '$lib/apis/chats';
 
+	import { user } from '$lib/stores';
 	import Modal from '$lib/components/common/Modal.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import UnarchiveAllConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
@@ -192,6 +193,7 @@
 															</button>
 														</Tooltip>
 
+														{#if $user?.role === 'admin' || $user?.permissions?.chat?.delete}
 														<Tooltip content={$i18n.t('Delete Chat')}>
 															<button
 																class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
@@ -215,6 +217,7 @@
 																</svg>
 															</button>
 														</Tooltip>
+													{/if}
 													</div>
 												</td>
 											</tr>
