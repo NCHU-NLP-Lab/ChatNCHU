@@ -627,7 +627,7 @@
 		<AccessControlModal
 			bind:show={showAccessControlModal}
 			bind:accessControl={knowledge.access_control}
-			allowPublic={$user?.permissions?.sharing?.public_knowledge || $user?.role === 'admin'}
+			allowPublic={$user?.permissions?.sharing?.public_knowledge || $user?.role === 'super_admin'}
 			onChange={() => {
 				changeDebounceHandler();
 			}}

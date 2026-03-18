@@ -193,7 +193,7 @@
 															</button>
 														</Tooltip>
 
-														{#if $user?.role === 'admin' || $user?.permissions?.chat?.delete}
+														{#if $user?.role === 'admin' || $user?.role === 'super_admin' || $user?.permissions?.chat?.delete}
 														<Tooltip content={$i18n.t('Delete Chat')}>
 															<button
 																class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"

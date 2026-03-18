@@ -162,7 +162,7 @@
 	};
 
 	const uploadFileHandler = async (file, fullContext: boolean = false) => {
-		if ($_user?.role !== 'admin' && !($_user?.permissions?.chat?.file_upload ?? true)) {
+		if ($_user?.role !== 'admin' && $_user?.role !== 'super_admin' && !($_user?.permissions?.chat?.file_upload ?? true)) {
 			toast.error($i18n.t('You do not have permission to upload files.'));
 			return null;
 		}
@@ -1128,7 +1128,7 @@
 											{/if}
 
 											{#if $_user}
-												{#if $config?.features?.enable_web_search && ($_user.role === 'admin' || $_user?.permissions?.features?.web_search)}
+												{#if $config?.features?.enable_web_search && ($_user.role === 'super_admin' || $_user?.permissions?.features?.web_search)}
 													<Tooltip content={$i18n.t('Search the internet')} placement="top">
 														<button
 															on:click|preventDefault={() => (webSearchEnabled = !webSearchEnabled)}
@@ -1147,7 +1147,7 @@
 													</Tooltip>
 												{/if}
 
-												{#if $config?.features?.enable_image_generation && ($_user.role === 'admin' || $_user?.permissions?.features?.image_generation)}
+												{#if $config?.features?.enable_image_generation && ($_user.role === 'super_admin' || $_user?.permissions?.features?.image_generation)}
 													<Tooltip content={$i18n.t('Generate an image')} placement="top">
 														<button
 															on:click|preventDefault={() =>
@@ -1166,7 +1166,7 @@
 													</Tooltip>
 												{/if}
 
-												{#if $config?.features?.enable_code_interpreter && ($_user.role === 'admin' || $_user?.permissions?.features?.code_interpreter)}
+												{#if $config?.features?.enable_code_interpreter && ($_user.role === 'super_admin' || $_user?.permissions?.features?.code_interpreter)}
 													<Tooltip content={$i18n.t('Execute code for analysis')} placement="top">
 														<button
 															on:click|preventDefault={() =>
@@ -1189,7 +1189,7 @@
 									</div>
 
 									<div class="self-end flex space-x-1 mr-1 shrink-0">
-										{#if (!history?.currentId || history.messages[history.currentId]?.done == true) && ($_user?.role === 'admin' || ($_user?.permissions?.chat?.stt ?? true))}
+										{#if (!history?.currentId || history.messages[history.currentId]?.done == true) && ($_user?.role === 'super_admin' || ($_user?.permissions?.chat?.stt ?? true))}
 											<Tooltip content={$i18n.t('Record voice')}>
 												<button
 													id="voice-input-button"
@@ -1262,7 +1262,7 @@
 													</button>
 												</Tooltip>
 											</div>
-										{:else if prompt === '' && files.length === 0 && ($_user?.role === 'admin' || ($_user?.permissions?.chat?.call ?? true))}
+										{:else if prompt === '' && files.length === 0 && ($_user?.role === 'super_admin' || ($_user?.permissions?.chat?.call ?? true))}
 											<div class=" flex items-center">
 												<Tooltip content={$i18n.t('Call')}>
 													<button

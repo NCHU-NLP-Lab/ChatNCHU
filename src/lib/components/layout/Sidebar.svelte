@@ -570,7 +570,7 @@
 			</div>
 		{/if} -->
 
-		{#if $user?.role === 'admin' || $user?.permissions?.workspace?.models || $user?.permissions?.workspace?.knowledge || $user?.permissions?.workspace?.prompts || $user?.permissions?.workspace?.tools}
+		{#if $user?.role === 'super_admin' || $user?.role === 'admin' || $user?.permissions?.workspace?.models || $user?.permissions?.workspace?.knowledge || $user?.permissions?.workspace?.prompts || $user?.permissions?.workspace?.tools}
 			<div class="px-1.5 flex justify-center text-gray-800 dark:text-gray-200">
 				<a
 					class="grow flex items-center space-x-3 rounded-lg px-2 py-[7px] hover:bg-gray-100 dark:hover:bg-gray-900 transition"
@@ -627,13 +627,13 @@
 				? 'opacity-20'
 				: ''}"
 		>
-			{#if $config?.features?.enable_channels && ($user?.role === 'admin' || $channels.length > 0) && !search}
+			{#if $config?.features?.enable_channels && (($user?.role === 'admin' || $user?.role === 'super_admin') || $channels.length > 0) && !search}
 				<Folder
 					className="px-2 mt-0.5"
 					name={$i18n.t('Channels')}
 					dragAndDrop={false}
 					onAdd={async () => {
-						if ($user?.role === 'admin') {
+						if ($user?.role === 'super_admin') {
 							await tick();
 
 							setTimeout(() => {

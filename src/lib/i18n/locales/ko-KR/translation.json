@@ -1358,5 +1358,6 @@
 	"{{COUNT}} Replies": "",
 	"{{user}}'s Chats": "{{user}}의 채팅",
 	"{{webUIName}} Backend Required": "{{webUIName}} 백엔드가 필요합니다.",
-	"The account or password is incorrect. Please check and try again.": "계정 또는 비밀번호가 올바르지 않습니다. 확인 후 다시 시도해주세요."
+	"The account or password is incorrect. Please check and try again.": "계정 또는 비밀번호가 올바르지 않습니다. 확인 후 다시 시도해주세요.",
+	"super_admin": "최고 관리자"
 }

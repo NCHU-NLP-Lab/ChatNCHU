@@ -5,6 +5,7 @@
 	import { addUser, getDefaultUserRole } from '$lib/apis/auths';
 
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { user } from '$lib/stores';
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import RoleDropdown from '$lib/components/common/RoleDropdown.svelte';
@@ -237,7 +238,7 @@
 								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Role')}</div>
 
 								<div class="flex-1">
-									<RoleDropdown bind:value={_user.role} />
+									<RoleDropdown bind:value={_user.role} excludeRoles={$user?.role !== 'super_admin' ? ['super_admin'] : []} />
 								</div>
 							</div>
 

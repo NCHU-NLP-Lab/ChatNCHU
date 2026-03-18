@@ -2,7 +2,7 @@
 	import { getContext, tick, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
-	import { config } from '$lib/stores';
+	import { config, user } from '$lib/stores';
 	import { getBackendConfig } from '$lib/apis';
 	import Database from './Settings/Database.svelte';
 
@@ -71,7 +71,8 @@
 			<div class=" self-center">{$i18n.t('General')}</div>
 		</button>
 
-		<button
+{#if $user?.role === 'super_admin'}
+				<button
 			class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
 			'connections'
 				? ''

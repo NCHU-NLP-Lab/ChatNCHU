@@ -155,7 +155,7 @@
 							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Role')}</div>
 
 							<div class="flex-1">
-								<RoleDropdown bind:value={_user.role} disabled={_user.id == sessionUser.id || _user.id == selectedUser.id && selectedUser.role === 'admin' && sessionUser.role === 'admin'} />
+								<RoleDropdown bind:value={_user.role} excludeRoles={sessionUser.role !== 'super_admin' ? ['super_admin'] : []} disabled={_user.id == sessionUser.id || (selectedUser.role === 'super_admin' && sessionUser.role !== 'super_admin')} />
 							</div>
 						</div>
 
@@ -191,7 +191,7 @@
 						</div>
 					</div>
 
-					{#if $config?.features?.enable_demo_time_limit && _user.role !== 'admin'}
+					{#if $config?.features?.enable_demo_time_limit && _user.role !== 'admin' && _user.role !== 'super_admin'}
 						<div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
 							<div class="flex items-center justify-between">
 								<div>

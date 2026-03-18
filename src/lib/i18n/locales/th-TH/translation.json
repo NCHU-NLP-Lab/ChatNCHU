@@ -1358,5 +1358,6 @@
 	"{{COUNT}} Replies": "",
 	"{{user}}'s Chats": "การสนทนาของ {{user}}",
 	"{{webUIName}} Backend Required": "ต้องการ Backend ของ {{webUIName}}",
-	"The account or password is incorrect. Please check and try again.": "บัญชีหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบและลองอีกครั้ง"
+	"The account or password is incorrect. Please check and try again.": "บัญชีหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบและลองอีกครั้ง",
+	"super_admin": "ผู้ดูแลระบบสูงสุด"
 }

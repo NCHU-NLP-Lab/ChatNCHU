@@ -192,7 +192,7 @@
 				}
 			});
 
-			if ($user?.role === 'admin' && ($settings?.showChangelog ?? true)) {
+			if (($user?.role === 'admin' || $user?.role === 'super_admin') && ($settings?.showChangelog ?? true)) {
 				showChangelog.set($settings?.version !== $config.version);
 			}
 

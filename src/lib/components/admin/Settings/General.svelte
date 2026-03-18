@@ -14,7 +14,7 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import { WEBUI_BUILD_HASH, WEBUI_VERSION } from '$lib/constants';
-	import { config, showChangelog } from '$lib/stores';
+	import { config, showChangelog, user } from '$lib/stores';
 	import { compareVersion } from '$lib/utils';
 	import { onMount, getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -225,6 +225,7 @@
 						<Switch bind:state={adminConfig.SHOW_ADMIN_DETAILS} />
 					</div>
 
+					{#if $user?.role === 'super_admin'}
 					<div class="mb-2.5 flex w-full justify-between pr-2">
 						<div class=" self-center text-xs font-medium">{$i18n.t('Enable API Key')}</div>
 
@@ -502,6 +503,8 @@
 					</div>
 				</div>
 
+				{/if}
+
 				<div class="mb-3">
 					<div class=" mb-2.5 text-base font-medium">{$i18n.t('ChatNCHU Settings')}</div>
 
@@ -694,6 +697,7 @@
 						</div>
 					{/if}
 
+					{#if $user?.role === 'super_admin'}
 					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
 						<div class="self-center text-xs font-medium">
 							{$i18n.t('Enable Email Verification')}
@@ -758,8 +762,10 @@
 							<Switch bind:state={adminConfig.SMTP_USE_TLS} />
 						</div>
 					{/if}
+					{/if}
 				</div>
 
+				{#if $user?.role === 'super_admin'}
 				<div class="mb-3">
 					<div class=" mb-2.5 text-base font-medium">{$i18n.t('Features')}</div>
 
@@ -831,6 +837,7 @@
 						</div>
 					</div>
 				</div>
+				{/if}
 			</div>
 		{/if}
 	</div>

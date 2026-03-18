@@ -189,7 +189,7 @@ class Tools:
 	bind:show={showAccessControlModal}
 	bind:accessControl
 	accessRoles={['read', 'write']}
-	allowPublic={$user?.permissions?.sharing?.public_tools || $user?.role === 'admin'}
+	allowPublic={$user?.permissions?.sharing?.public_tools || $user?.role === 'super_admin'}
 />
 
 <div class=" flex flex-col justify-between w-full overflow-y-auto h-full">

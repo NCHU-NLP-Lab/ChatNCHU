@@ -48,6 +48,7 @@
 	export let permissions = {};
 
 	export let custom = true;
+	export let limitedAdmin = false;
 
 	// Reactive statement to ensure all fields are present in `permissions`
 	$: {
@@ -78,6 +79,7 @@
 
 <div>
 	<!-- <div>
+		{#if !limitedAdmin}
 		<div class=" mb-2 text-sm font-medium">{$i18n.t('Model Permissions')}</div>
 
 		<div class="mb-2">
@@ -378,6 +380,8 @@
 		</div>
 	</div>
 
+
+	{/if}
 
 	{#if custom}
 		<hr class=" border-gray-100 dark:border-gray-850 my-2" />

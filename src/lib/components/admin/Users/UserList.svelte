@@ -380,7 +380,7 @@
 					<td class="px-3 py-1 min-w-[7rem] w-28">
 						<span class="translate-y-0.5 inline-block">
 							<Badge
-								type={user.role === 'admin' ? 'info' : user.role === 'user' ? 'success' : user.role === 'suspended' ? 'error' : 'muted'}
+								type={user.role === 'super_admin' ? 'warning' : user.role === 'admin' ? 'info' : user.role === 'user' ? 'success' : user.role === 'suspended' ? 'error' : 'muted'}
 								content={$i18n.t(user.role)}
 							/>
 						</span>
@@ -395,7 +395,7 @@
 
 					<td class="px-3 py-1 text-right">
 						<div class="flex justify-end w-full">
-							{#if $config.features.enable_admin_chat_access && user.role !== 'admin'}
+							{#if $config.features.enable_admin_chat_access && $user?.role === 'super_admin' && user.role !== 'super_admin'}
 								<Tooltip content={$i18n.t('Chats')}>
 									<button
 										class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
@@ -434,7 +434,7 @@
 								</button>
 							</Tooltip>
 
-							{#if user.role !== 'admin'}
+							{#if user.role !== 'super_admin' && !(user.role === 'admin' && $user?.role === 'admin')}
 								<Tooltip content={$i18n.t('Delete User')}>
 									<button
 										class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"

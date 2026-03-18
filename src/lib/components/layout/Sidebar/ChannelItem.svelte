@@ -78,7 +78,7 @@
 		</div>
 	</a>
 
-	{#if $user?.role === 'admin'}
+	{#if $user?.role === 'super_admin'}
 		<button
 			class="absolute z-10 right-2 invisible group-hover:visible self-center flex items-center dark:text-gray-300"
 			on:click={(e) => {

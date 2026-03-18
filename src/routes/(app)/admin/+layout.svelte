@@ -11,7 +11,7 @@
 	let loaded = false;
 
 	onMount(async () => {
-		if ($user?.role !== 'admin') {
+		if ($user?.role !== 'admin' && $user?.role !== 'super_admin') {
 			await goto('/');
 		}
 		loaded = true;
@@ -58,6 +58,7 @@
 							href="/admin">{$i18n.t('Users')}</a
 						>
 
+						{#if $user?.role === 'super_admin'}
 						<a
 							class="min-w-fit rounded-full p-1.5 {$page.url.pathname.includes('/admin/evaluations')
 								? ''
@@ -71,6 +72,7 @@
 								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
 							href="/admin/functions">{$i18n.t('Functions')}</a
 						>
+						{/if}
 
 						<a
 							class="min-w-fit rounded-full p-1.5 {$page.url.pathname.includes('/admin/settings')

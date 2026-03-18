@@ -106,7 +106,7 @@
 						</Tooltip>
 					{/if}
 
-					{#if message.user_id === $user?.id || $user?.role === 'admin'}
+					{#if message.user_id === $user?.id || $user?.role === 'super_admin'}
 						<Tooltip content={$i18n.t('Edit')}>
 							<button
 								class="hover:bg-gray-100 dark:hover:bg-gray-800 transition rounded-lg p-1"

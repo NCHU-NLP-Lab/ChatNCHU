@@ -202,7 +202,7 @@
 		{/each}
 	</div>
 
-	{#if $user?.role === 'admin'}
+	{#if $user?.role === 'super_admin'}
 		<div class=" flex justify-end w-full mb-3">
 			<div class="flex space-x-2">
 				<input

@@ -1358,5 +1358,6 @@
 	"{{COUNT}} Replies": "{{COUNT}} 回覆",
 	"{{user}}'s Chats": "{{user}} 的對話",
 	"{{webUIName}} Backend Required": "需要 {{webUIName}} 後端",
-	"The account or password is incorrect. Please check and try again.": "帳號或密碼不正確，請確認後再試。"
+	"The account or password is incorrect. Please check and try again.": "帳號或密碼不正確，請確認後再試。",
+	"super_admin": "系統管理員"
 }

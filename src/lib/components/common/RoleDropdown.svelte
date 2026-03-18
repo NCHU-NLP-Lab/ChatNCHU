@@ -5,6 +5,7 @@
 
 	export let value = 'user';
 	export let disabled = false;
+	export let excludeRoles: string[] = [];
 
 	let open = false;
 
@@ -12,6 +13,7 @@
 		{ code: 'pending', type: 'muted' },
 		{ code: 'user', type: 'success' },
 		{ code: 'admin', type: 'info' },
+		{ code: 'super_admin', type: 'warning' },
 		{ code: 'suspended', type: 'error' }
 	];
 
@@ -19,14 +21,16 @@
 		info: 'bg-blue-500/20 text-blue-700 dark:text-blue-200',
 		success: 'bg-green-500/20 text-green-700 dark:text-green-200',
 		error: 'bg-red-500/20 text-red-700 dark:text-red-200',
-		muted: 'bg-gray-500/20 text-gray-700 dark:text-gray-200'
+		muted: 'bg-gray-500/20 text-gray-700 dark:text-gray-200',
+		warning: 'bg-amber-500/20 text-amber-700 dark:text-amber-200'
 	};
 
 	const hoverClasses: Record<string, string> = {
 		info: 'hover:bg-blue-500/30',
 		success: 'hover:bg-green-500/30',
 		error: 'hover:bg-red-500/30',
-		muted: 'hover:bg-gray-500/30'
+		muted: 'hover:bg-gray-500/30',
+		warning: 'hover:bg-amber-500/30'
 	};
 
 	function getRole(code: string) {
@@ -68,7 +72,7 @@
 			class="absolute left-0 top-full mt-1 rounded-lg border border-gray-200 dark:border-gray-700
 				bg-white dark:bg-gray-850 shadow-lg overflow-hidden z-50 min-w-[120px]"
 		>
-			{#each ROLES as role}
+			{#each ROLES.filter(r => !excludeRoles.includes(r.code)) as role}
 				<button
 					class="w-full px-3 py-1.5 text-xs text-left whitespace-nowrap transition flex items-center gap-2
 						{role.code === value

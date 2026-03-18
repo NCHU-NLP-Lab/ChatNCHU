@@ -303,7 +303,7 @@
 								</button>
 							</Tooltip>
 						{:else}
-							{#if $user?.role === 'admin' || model.user_id === $user?.id || model.access_control.write.group_ids.some( (wg) => group_ids.includes(wg) )}
+							{#if $user?.role === 'super_admin' || model.user_id === $user?.id || model.access_control.write.group_ids.some( (wg) => group_ids.includes(wg) )}
 								<a
 									class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
 									type="button"
@@ -379,7 +379,7 @@
 		{/each}
 	</div>
 
-	{#if $user?.role === 'admin'}
+	{#if $user?.role === 'super_admin'}
 		<div class=" flex justify-end w-full mb-3">
 			<div class="flex space-x-1">
 				<input

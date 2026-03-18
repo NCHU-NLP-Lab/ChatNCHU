@@ -1358,5 +1358,6 @@
 	"{{COUNT}} Replies": "",
 	"{{user}}'s Chats": "{{user}} のチャット",
 	"{{webUIName}} Backend Required": "{{webUIName}} バックエンドが必要です",
-	"The account or password is incorrect. Please check and try again.": "アカウントまたはパスワードが正しくありません。確認してもう一度お試しください。"
+	"The account or password is incorrect. Please check and try again.": "アカウントまたはパスワードが正しくありません。確認してもう一度お試しください。",
+	"super_admin": "システム管理者"
 }

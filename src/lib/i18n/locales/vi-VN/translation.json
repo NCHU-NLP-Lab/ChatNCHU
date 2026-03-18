@@ -1358,5 +1358,6 @@
 	"{{COUNT}} Replies": "{{COUNT}} Trả lời",
 	"{{user}}'s Chats": "Các cuộc trò chuyện của {{user}}",
 	"{{webUIName}} Backend Required": "{{webUIName}} Yêu cầu Backend",
-	"The account or password is incorrect. Please check and try again.": "Tài khoản hoặc mật khẩu không đúng. Vui lòng kiểm tra và thử lại."
+	"The account or password is incorrect. Please check and try again.": "Tài khoản hoặc mật khẩu không đúng. Vui lòng kiểm tra và thử lại.",
+	"super_admin": "Quản trị viên hệ thống"
 }

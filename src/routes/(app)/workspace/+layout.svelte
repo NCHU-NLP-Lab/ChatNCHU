@@ -21,7 +21,7 @@
 	let loaded = false;
 
 	onMount(async () => {
-		if ($user?.role !== 'admin') {
+		if ($user?.role !== 'admin' && $user?.role !== 'super_admin') {
 			if ($page.url.pathname.includes('/models') && !$user?.permissions?.workspace?.models) {
 				goto('/');
 			} else if (
@@ -76,7 +76,7 @@
 					<div
 						class="flex gap-1 scrollbar-none overflow-x-auto w-fit text-center text-sm font-medium rounded-full bg-transparent py-1 touch-auto pointer-events-auto"
 					>
-						{#if $user?.role === 'admin' || $user?.permissions?.workspace?.models}
+						{#if $user?.role === 'super_admin' || $user?.permissions?.workspace?.models}
 							<a
 								class="min-w-fit rounded-full p-1.5 {$page.url.pathname.includes(
 									'/workspace/models'
@@ -87,7 +87,7 @@
 							>
 						{/if}
 
-						{#if $user?.role === 'admin' || $user?.permissions?.workspace?.knowledge}
+						{#if $user?.role === 'super_admin' || $user?.permissions?.workspace?.knowledge}
 							<a
 								class="min-w-fit rounded-full p-1.5 {$page.url.pathname.includes(
 									'/workspace/knowledge'
@@ -100,7 +100,7 @@
 							</a>
 						{/if}
 
-						{#if $user?.role === 'admin' || $user?.permissions?.workspace?.prompts}
+						{#if $user?.role === 'super_admin' || $user?.permissions?.workspace?.prompts}
 							<a
 								class="min-w-fit rounded-full p-1.5 {$page.url.pathname.includes(
 									'/workspace/prompts'
@@ -111,7 +111,7 @@
 							>
 						{/if}
 
-						{#if $user?.role === 'admin' || $user?.permissions?.workspace?.tools}
+						{#if $user?.role === 'super_admin' || $user?.permissions?.workspace?.tools}
 							<a
 								class="min-w-fit rounded-full p-1.5 {$page.url.pathname.includes('/workspace/tools')
 									? ''

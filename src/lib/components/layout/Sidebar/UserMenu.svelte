@@ -93,7 +93,7 @@
 				<div class=" self-center truncate">{$i18n.t('Archived Chats')}</div>
 			</button>
 
-			{#if role === 'admin'}
+			{#if role === 'admin' || role === 'super_admin'}
 				<a
 					class="flex rounded-md py-2 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
 					href="/playground"
@@ -160,7 +160,7 @@
 			<button
 				class="flex rounded-md py-2 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
 				on:click={async () => {
-					if ($config?.features?.enable_demo_time_limit && role !== 'admin') {
+					if ($config?.features?.enable_demo_time_limit && role !== 'admin' && role !== 'super_admin') {
 						try {
 							const token = localStorage.getItem('token');
 							if (token) {
