@@ -171,7 +171,7 @@
 									bind:value={_user.email}
 									autocomplete="off"
 									required
-									disabled={_user.id == sessionUser.id}
+									
 								/>
 							</div>
 						</div>
