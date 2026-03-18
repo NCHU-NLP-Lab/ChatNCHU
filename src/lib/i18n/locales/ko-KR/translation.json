@@ -323,7 +323,7 @@
 	"Deleted {{name}}": "{{name}}을(를) 삭제했습니다.",
 	"Demo Session": "로그인 횟수 초기화",
 	"Demo session reset successfully.": "로그인 횟수 초기화 성공.",
-	"Demo Time Limit": "데모 시간 제한",
+	"Demo Time Limit": "시간 제한",
 	"Describe your knowledge base and objectives": "지식 기반에 대한 설명과 목적을 입력하세요",
 	"Description": "설명",
 	"Detect Artifacts Automatically": "",

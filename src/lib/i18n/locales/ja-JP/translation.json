@@ -323,7 +323,7 @@
 	"Deleted {{name}}": "{{name}}を削除しました",
 	"Demo Session": "ログイン回数リセット",
 	"Demo session reset successfully.": "ログイン回数のリセットに成功しました。",
-	"Demo Time Limit": "デモ時間制限",
+	"Demo Time Limit": "時間制限",
 	"Describe your knowledge base and objectives": "",
 	"Description": "説明",
 	"Detect Artifacts Automatically": "",
