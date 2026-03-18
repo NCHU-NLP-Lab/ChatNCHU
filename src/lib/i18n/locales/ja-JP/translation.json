@@ -394,7 +394,7 @@
 	"Edit User Group": "",
 	"ElevenLabs": "",
 	"Email": "メールアドレス",
-	"Email or Employee ID / Student ID": "メールアドレスまたは学籍番号 / 社員番号",
+	"Email or Employee ID / Student ID": "メールアドレスまたは学籍番号 / 社員番号（メールは完全なアドレスを入力）",
 	"Email username can only contain letters and numbers.": "メールのユーザー名には英数字のみ使用できます。",
 	"Embark on adventures": "",
 	"Embedding": "",
@@ -1147,7 +1147,6 @@
 	"The batch size determines how many text requests are processed together at once. A higher batch size can increase the performance and speed of the model, but it also requires more memory.": "",
 	"The developers behind this plugin are passionate volunteers from the community. If you find this plugin helpful, please consider contributing to its development.": "",
 	"The email format you entered is invalid. Please double-check and make sure you're using a valid email address (e.g., yourname@example.com).": "入力されたメールアドレスの形式が無効です。正しいメールアドレスをご確認ください（例: yourname@example.com）。",
-	"The email or password provided is incorrect. Please check for typos and try logging in again.": "メールアドレスまたはパスワードが正しくありません。入力内容をご確認の上、再度お試しください。",
 	"The evaluation leaderboard is based on the Elo rating system and is updated in real-time.": "",
 	"The LDAP attribute that maps to the mail that users use to sign in.": "",
 	"The LDAP attribute that maps to the username that users use to sign in.": "",
@@ -1358,5 +1357,6 @@
 	"{{COUNT}} hidden lines": "",
 	"{{COUNT}} Replies": "",
 	"{{user}}'s Chats": "{{user}} のチャット",
-	"{{webUIName}} Backend Required": "{{webUIName}} バックエンドが必要です"
+	"{{webUIName}} Backend Required": "{{webUIName}} バックエンドが必要です",
+	"The account or password is incorrect. Please check and try again.": "アカウントまたはパスワードが正しくありません。確認してもう一度お試しください。"
 }

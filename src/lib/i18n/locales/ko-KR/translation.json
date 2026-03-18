@@ -394,7 +394,7 @@
 	"Edit User Group": "",
 	"ElevenLabs": "ElevenLabs",
 	"Email": "이메일",
-	"Email or Employee ID / Student ID": "이메일 또는 학번 / 사번",
+	"Email or Employee ID / Student ID": "이메일 또는 학번 / 사번 (이메일은 전체 주소를 입력하세요)",
 	"Email username can only contain letters and numbers.": "이메일 사용자 이름은 영문자와 숫자만 사용할 수 있습니다.",
 	"Embark on adventures": "",
 	"Embedding": "",
@@ -1147,7 +1147,6 @@
 	"The batch size determines how many text requests are processed together at once. A higher batch size can increase the performance and speed of the model, but it also requires more memory.": "",
 	"The developers behind this plugin are passionate volunteers from the community. If you find this plugin helpful, please consider contributing to its development.": "이 플러그인 뒤에 있는 개발자는 커뮤니티에서 활동하는 단순한 열정적인 일반인들입니다. 만약 플러그인이 도움 되었다면, 플러그인 개발에 기여를 고려해주세요!",
 	"The email format you entered is invalid. Please double-check and make sure you're using a valid email address (e.g., yourname@example.com).": "입력한 이메일 형식이 올바르지 않습니다. 유효한 이메일 주소를 확인해주세요 (예: yourname@example.com).",
-	"The email or password provided is incorrect. Please check for typos and try logging in again.": "이메일 또는 비밀번호가 올바르지 않습니다. 오타를 확인하고 다시 로그인해주세요.",
 	"The evaluation leaderboard is based on the Elo rating system and is updated in real-time.": "평가 리더보드는 Elo 평가 시스템을 기반으로 하고 실시간으로 업데이트됩니다",
 	"The LDAP attribute that maps to the mail that users use to sign in.": "",
 	"The LDAP attribute that maps to the username that users use to sign in.": "",
@@ -1358,5 +1357,6 @@
 	"{{COUNT}} hidden lines": "",
 	"{{COUNT}} Replies": "",
 	"{{user}}'s Chats": "{{user}}의 채팅",
-	"{{webUIName}} Backend Required": "{{webUIName}} 백엔드가 필요합니다."
+	"{{webUIName}} Backend Required": "{{webUIName}} 백엔드가 필요합니다.",
+	"The account or password is incorrect. Please check and try again.": "계정 또는 비밀번호가 올바르지 않습니다. 확인 후 다시 시도해주세요."
 }

@@ -394,7 +394,7 @@
 	"Edit User Group": "編輯使用者群組",
 	"ElevenLabs": "ElevenLabs",
 	"Email": "Email",
-	"Email or Employee ID / Student ID": "Email 或 學號 / 員工編號",
+	"Email or Employee ID / Student ID": "Email 或 學號 / 員工編號（Email 請輸入完整地址）",
 	"Email username can only contain letters and numbers.": "電子郵件帳號只能包含英文字母和數字。",
 	"Embark on adventures": "展開探險之旅",
 	"Embedding": "嵌入",
@@ -1147,7 +1147,6 @@
 	"The batch size determines how many text requests are processed together at once. A higher batch size can increase the performance and speed of the model, but it also requires more memory.": "批次大小決定一次處理多少文字請求。較高的批次大小可以提高模型的效能和速度，但也需要更多記憶體。",
 	"The developers behind this plugin are passionate volunteers from the community. If you find this plugin helpful, please consider contributing to its development.": "這個外掛背後的開發者是來自社群的熱情志願者。如果您覺得這個外掛很有幫助，請考慮為其開發做出貢獻。",
 	"The email format you entered is invalid. Please double-check and make sure you're using a valid email address (e.g., yourname@example.com).": "您輸入的電子郵件格式無效，請確認使用有效的電子郵件地址（例如：yourname@example.com）。",
-	"The email or password provided is incorrect. Please check for typos and try logging in again.": "電子郵件或密碼不正確，請檢查後重試。",
 	"The evaluation leaderboard is based on the Elo rating system and is updated in real-time.": "評估排行榜基於 Elo 評分系統，並即時更新。",
 	"The LDAP attribute that maps to the mail that users use to sign in.": "對映到使用者用於登入的使用者郵箱的 LDAP 屬性。",
 	"The LDAP attribute that maps to the username that users use to sign in.": "對映到使用者用於登入的使用者名稱的 LDAP 屬性。",
@@ -1358,5 +1357,6 @@
 	"{{COUNT}} hidden lines": "已隱藏 {{COUNT}} 行",
 	"{{COUNT}} Replies": "{{COUNT}} 回覆",
 	"{{user}}'s Chats": "{{user}} 的對話",
-	"{{webUIName}} Backend Required": "需要 {{webUIName}} 後端"
+	"{{webUIName}} Backend Required": "需要 {{webUIName}} 後端",
+	"The account or password is incorrect. Please check and try again.": "帳號或密碼不正確，請確認後再試。"
 }

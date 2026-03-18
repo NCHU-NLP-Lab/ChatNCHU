@@ -9,7 +9,7 @@ from open_webui.models.groups import Groups
 
 
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import BigInteger, Column, String, Text
+from sqlalchemy import BigInteger, Column, String, Text, func
 
 ####################
 # User DB Schema
@@ -162,7 +162,11 @@ class UsersTable:
     def get_user_by_employee_id(self, employee_id: str) -> Optional[UserModel]:
         try:
             with get_db() as db:
-                user = db.query(User).filter_by(employee_id=employee_id).first()
+                user = (
+                    db.query(User)
+                    .filter(func.lower(User.employee_id) == employee_id.lower())
+                    .first()
+                )
                 return UserModel.model_validate(user)
         except Exception:
             return None

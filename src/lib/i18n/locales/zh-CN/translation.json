@@ -383,7 +383,7 @@
 	"Edit User Group": "编辑用户组",
 	"ElevenLabs": "ElevenLabs",
 	"Email": "电子邮箱",
-	"Email or Employee ID / Student ID": "Email 或 学号 / 员工编号",
+	"Email or Employee ID / Student ID": "Email 或 学号 / 员工编号（Email 请输入完整地址）",
 	"Embark on adventures": "踏上冒险之旅",
 	"Embedding": "嵌入",
 	"Embedding Batch Size": "嵌入层批处理大小 (Embedding Batch Size)",
@@ -1299,5 +1299,6 @@
 	"{{user}}'s Chats": "{{user}} 的对话记录",
 	"{{webUIName}} Backend Required": "{{webUIName}} 需要后端服务",
 	"Enter Student/Employee ID": "输入学号/教职工编号",
-	"Ensure your CSV file includes 4 columns in this order: Student/Employee ID, Name, Email, Password.": "请确保 CSV 文件包含 4 列，顺序为：学号/教职工编号、姓名、邮箱、密码。"
+	"Ensure your CSV file includes 4 columns in this order: Student/Employee ID, Name, Email, Password.": "请确保 CSV 文件包含 4 列，顺序为：学号/教职工编号、姓名、邮箱、密码。",
+	"The account or password is incorrect. Please check and try again.": "账号或密码不正确，请确认后再试。"
 }

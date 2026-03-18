@@ -394,7 +394,7 @@
 	"Edit User Group": "",
 	"ElevenLabs": "",
 	"Email": "อีเมล",
-	"Email or Employee ID / Student ID": "อีเมลหรือรหัสนักศึกษา / รหัสพนักงาน",
+	"Email or Employee ID / Student ID": "อีเมลหรือรหัสนักศึกษา / รหัสพนักงาน (กรุณากรอกอีเมลแบบเต็ม)",
 	"Email username can only contain letters and numbers.": "ชื่อผู้ใช้อีเมลสามารถใช้ได้เฉพาะตัวอักษรและตัวเลข",
 	"Embark on adventures": "",
 	"Embedding": "",
@@ -1147,7 +1147,6 @@
 	"The batch size determines how many text requests are processed together at once. A higher batch size can increase the performance and speed of the model, but it also requires more memory.": "",
 	"The developers behind this plugin are passionate volunteers from the community. If you find this plugin helpful, please consider contributing to its development.": "นักพัฒนาที่อยู่เบื้องหลังปลั๊กอินนี้เป็นอาสาสมัครที่มีชื่นชอบการแบ่งบัน หากคุณพบว่าปลั๊กอินนี้มีประโยชน์ โปรดพิจารณาสนับสนุนการพัฒนาของเขา",
 	"The email format you entered is invalid. Please double-check and make sure you're using a valid email address (e.g., yourname@example.com).": "รูปแบบอีเมลไม่ถูกต้อง กรุณาตรวจสอบให้แน่ใจว่าใช้อีเมลที่ถูกต้อง (เช่น yourname@example.com)",
-	"The email or password provided is incorrect. Please check for typos and try logging in again.": "อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบและลองเข้าสู่ระบบอีกครั้ง",
 	"The evaluation leaderboard is based on the Elo rating system and is updated in real-time.": "",
 	"The LDAP attribute that maps to the mail that users use to sign in.": "",
 	"The LDAP attribute that maps to the username that users use to sign in.": "",
@@ -1358,5 +1357,6 @@
 	"{{COUNT}} hidden lines": "",
 	"{{COUNT}} Replies": "",
 	"{{user}}'s Chats": "การสนทนาของ {{user}}",
-	"{{webUIName}} Backend Required": "ต้องการ Backend ของ {{webUIName}}"
+	"{{webUIName}} Backend Required": "ต้องการ Backend ของ {{webUIName}}",
+	"The account or password is incorrect. Please check and try again.": "บัญชีหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบและลองอีกครั้ง"
 }
