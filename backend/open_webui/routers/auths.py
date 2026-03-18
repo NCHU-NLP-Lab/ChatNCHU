@@ -737,7 +737,10 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
 @router.post("/signup", response_model=SessionUserResponse)
 async def signup(request: Request, response: Response, form_data: SignupForm):
 
-    if WEBUI_AUTH:
+    # ChatNCHU: Always allow first user signup (admin creation)
+    if Users.get_num_users() == 0:
+        pass
+    elif WEBUI_AUTH:
         if (
             not request.app.state.config.ENABLE_SIGNUP
             or not request.app.state.config.ENABLE_LOGIN_FORM
@@ -746,10 +749,9 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
                 status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.ACCESS_PROHIBITED
             )
     else:
-        if Users.get_num_users() != 0:
-            raise HTTPException(
-                status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.ACCESS_PROHIBITED
-            )
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.ACCESS_PROHIBITED
+        )
 
     user_count = Users.get_num_users()
     if not validate_email_format(form_data.email.lower()):
