@@ -62,9 +62,9 @@
 		<div class=" overflow-y-scroll max-h-96 scrollbar-hidden">
 			<div class="mb-3">
 				{#if changelog}
-					{#each Object.keys(changelog) as version}
+					{#each Object.keys(changelog) as version, i}
 						<div class=" mb-3 pr-2">
-							<div class="font-semibold text-xl mb-1 dark:text-white">
+							<div class="font-semibold {i === 0 ? 'text-xl' : 'text-sm text-gray-500 dark:text-gray-400'} mb-1">
 								v{version} - {changelog[version].date}
 							</div>
 

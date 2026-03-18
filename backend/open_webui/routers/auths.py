@@ -730,6 +730,16 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
 
 
 ############################
+# Default User Role
+############################
+
+
+@router.get("/signup/user/role")
+async def get_default_user_role(request: Request, user=Depends(get_admin_user)):
+    return request.app.state.config.DEFAULT_USER_ROLE
+
+
+############################
 # SignUp
 ############################
 
