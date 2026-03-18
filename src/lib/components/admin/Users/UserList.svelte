@@ -412,7 +412,7 @@
 								</Tooltip>
 							{/if}
 
-							{#if user.id !== sessionUserId && (user.role !== 'super_admin' || sessionRole === 'super_admin')}
+							{#if user.role !== 'super_admin' || sessionRole === 'super_admin'}
 							<Tooltip content={$i18n.t('Edit User')}>
 								<button
 									class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
