@@ -165,10 +165,6 @@ async def update_user_role(form_data: UserRoleUpdateForm, user=Depends(get_admin
     if user.role == "admin" and target_user.role == "super_admin":
         raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
 
-    # Only first user can modify other super_admins
-    if target_user.role == "super_admin" and user.id != first_user.id:
-        raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
-
     return Users.update_user_role_by_id(form_data.id, form_data.role)
 
 
@@ -322,10 +318,6 @@ async def update_user_by_id(
         if session_user.role == "admin" and user.role == "super_admin":
             raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
 
-        # Only first user can edit other super_admins
-        if user.role == "super_admin" and session_user.id != first_user.id:
-            raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
-
         if form_data.email.lower() != user.email:
             email_user = Users.get_user_by_email(form_data.email.lower())
             if email_user:
@@ -406,10 +398,6 @@ async def delete_user_by_id(user_id: str, user=Depends(get_admin_user)):
 
     # Limited admin cannot delete super_admin users
     if user.role == "admin" and target_user.role == "super_admin":
-        raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
-
-    # Only first user can delete other super_admins
-    if target_user.role == "super_admin" and user.id != first_user.id:
         raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
 
     result = Auths.delete_auth_by_id(user_id)
