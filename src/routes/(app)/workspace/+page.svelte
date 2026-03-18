@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 
 	onMount(() => {
-		if ($user?.role !== 'admin' && $user?.role !== 'super_admin') {
+		if ($user?.role !== 'super_admin') {
 			if ($user?.permissions?.workspace?.models) {
 				goto('/workspace/models');
 			} else if ($user?.permissions?.workspace?.knowledge) {

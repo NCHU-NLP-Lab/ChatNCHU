@@ -477,7 +477,7 @@
 				</div>
 			</div>
 
-			{#if ($user?.role === 'admin' || $user?.role === 'super_admin')}
+			{#if $user?.role === 'super_admin'}
 				<div>
 					<div class=" py-0.5 flex w-full justify-between">
 						<div class=" self-center text-xs">

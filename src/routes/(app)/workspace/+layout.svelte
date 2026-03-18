@@ -21,7 +21,7 @@
 	let loaded = false;
 
 	onMount(async () => {
-		if ($user?.role !== 'admin' && $user?.role !== 'super_admin') {
+		if ($user?.role !== 'super_admin') {
 			if ($page.url.pathname.includes('/models') && !$user?.permissions?.workspace?.models) {
 				goto('/');
 			} else if (

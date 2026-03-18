@@ -281,7 +281,7 @@
 				</div>
 
 				<div class="flex items-center gap-1.5">
-					{#if ($user?.role === 'admin' || $user?.role === 'super_admin')}
+					{#if $user?.role === 'super_admin'}
 						<button
 							class="text-xs px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
 							type="button"
@@ -492,7 +492,7 @@
 			{/if}
 		</div>
 
-		{#if ($user?.role === 'admin' || $user?.role === 'super_admin')}
+		{#if $user?.role === 'super_admin'}
 			<div class=" flex justify-end w-full mb-3">
 				<div class="flex space-x-1">
 					<input

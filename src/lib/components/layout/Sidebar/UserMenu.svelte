@@ -93,7 +93,7 @@
 				<div class=" self-center truncate">{$i18n.t('Archived Chats')}</div>
 			</button>
 
-			{#if role === 'admin' || role === 'super_admin'}
+			{#if role === 'super_admin'}
 				<a
 					class="flex rounded-md py-2 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
 					href="/playground"
@@ -123,6 +123,9 @@
 					</div>
 					<div class=" self-center truncate">{$i18n.t('Playground')}</div>
 				</a>
+			{/if}
+
+			{#if role === 'admin' || role === 'super_admin'}
 
 				<a
 					class="flex rounded-md py-2 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
