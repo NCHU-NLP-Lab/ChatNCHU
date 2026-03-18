@@ -33,15 +33,16 @@
 
 ### ChatNCHU Additions
 
+- **Role hierarchy** — Super Admin / Admin / User separation; Admin manages users & basic settings with user-level chat experience
 - **Email-verified registration** — 6-digit verification code via SMTP
 - **Forgot password** — 3-step reset flow (email → code → new password)
 - **Email domain whitelist** — restrict registration to specific domains (e.g. `nchu.edu.tw`)
 - **Employee / Student ID** — required unique identifier for all users, supports login by ID
-- **Demo session time limit** — daily login count + session duration countdown + modal warnings (15 min / 5 min) + auto-logout
+- **Session time limit** — daily login count + session duration countdown + modal warnings (15 min / 5 min) + auto-logout, per-group override with "Use Default" toggle
 - **Admin email on login page** — configurable contact info displayed in footer
 - **LanguageSwitcher** — 7 languages (zh-TW, en-US, ja-JP, ko-KR, vi-VN, th-TH, id-ID)
-- **Model management** — batch enable/disable, active-first sorting, auto-assign logos
-- **Campus branding** — custom logo, campus gate background, branded onboarding
+- **Model management** — all models disabled+private by default, `ENABLED_MODELS` auto-enabled+public, batch enable/disable, active-first sorting, auto-assign logos
+- **Campus branding** — NCHU emblem as favicon/logo, campus gate background, branded onboarding
 - **Admin user management** — custom RoleDropdown with colored role badges, CSV batch import (4-column), suspended role support
 - **Password UX** — show/hide toggle + Caps Lock warning on all password fields
 
@@ -76,7 +77,7 @@ cd ChatNCHU
 docker compose up -d --build
 ```
 
-Access at http://localhost:3000 — the first registered user becomes admin.
+Access at http://localhost:3000 — the first registered user becomes Super Admin.
 
 > **Note:** For production deployment configuration (`.env`, reverse proxy, etc.), see the separate deploy repo.
 
@@ -84,13 +85,10 @@ Access at http://localhost:3000 — the first registered user becomes admin.
 
 Most settings can be configured through the **Admin Panel** GUI after login:
 
-| Section | What you can configure |
-|---------|----------------------|
-| **Connections** | LLM API endpoint & key (OpenRouter, Ollama, etc.) |
-| **Models** | Enable/disable models, set default models |
-| **Web Search** | Search engine selection & API keys |
-| **ChatNCHU Settings** | Email domains, verification, demo limits, SMTP, admin email |
-| **Authentication** | Signup toggle, default role, JWT expiration, LDAP |
+| Role | What you can configure |
+|------|----------------------|
+| **Super Admin** | Everything — connections, models, web search, SMTP, LDAP, features, code execution, etc. |
+| **Admin** | Users, groups, signup toggle, default role, email domains, admin email, time limits |
 
 ## License
 
