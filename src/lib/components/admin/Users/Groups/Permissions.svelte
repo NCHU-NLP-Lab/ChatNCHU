@@ -78,8 +78,8 @@
 </script>
 
 <div>
+	{#if !limitedAdmin}
 	<!-- <div>
-		{#if !limitedAdmin}
 		<div class=" mb-2 text-sm font-medium">{$i18n.t('Model Permissions')}</div>
 
 		<div class="mb-2">
@@ -379,7 +379,6 @@
 			<Switch bind:state={permissions.features.code_interpreter} />
 		</div>
 	</div>
-
 
 	{/if}
 

@@ -58,7 +58,7 @@
 	onMount(async () => {
 		if ($user === undefined || $user === null) {
 			await goto('/auth');
-		} else if (['user', 'admin'].includes($user?.role)) {
+		} else if (['user', 'admin', 'super_admin'].includes($user?.role)) {
 			try {
 				// Check if IndexedDB exists
 				DB = await openDB('Chats', 1);
@@ -224,7 +224,7 @@
 	<div
 		class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-auto flex flex-row justify-end"
 	>
-		{#if $user && !['user', 'admin'].includes($user?.role)}
+		{#if $user && !['user', 'admin', 'super_admin'].includes($user?.role)}
 			<AccountPending role={$user?.role} />
 		{:else if localDBChats.length > 0}
 			<div class="fixed w-full h-full flex z-50">

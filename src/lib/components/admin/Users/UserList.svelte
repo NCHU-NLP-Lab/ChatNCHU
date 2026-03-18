@@ -1,6 +1,8 @@
 <script>
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import { WEBUI_NAME, config, user, showSidebar } from '$lib/stores';
+
+	$: sessionRole = $user?.role;
 	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
 
@@ -395,7 +397,7 @@
 
 					<td class="px-3 py-1 text-right">
 						<div class="flex justify-end w-full">
-							{#if $config.features.enable_admin_chat_access && $user?.role === 'super_admin' && user.role !== 'super_admin'}
+							{#if $config.features.enable_admin_chat_access && sessionRole === 'super_admin' && user.role !== 'super_admin'}
 								<Tooltip content={$i18n.t('Chats')}>
 									<button
 										class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
@@ -409,6 +411,7 @@
 								</Tooltip>
 							{/if}
 
+							{#if user.role !== 'super_admin' || sessionRole === 'super_admin'}
 							<Tooltip content={$i18n.t('Edit User')}>
 								<button
 									class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
@@ -435,7 +438,7 @@
 							</Tooltip>
 							{/if}
 
-							{#if user.role !== 'super_admin' || $user?.role === 'super_admin'}
+							{#if user.role !== 'super_admin' || sessionRole === 'super_admin'}
 								<Tooltip content={$i18n.t('Delete User')}>
 									<button
 										class="self-center w-fit text-sm px-2 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"

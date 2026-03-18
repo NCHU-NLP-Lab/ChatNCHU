@@ -118,7 +118,9 @@
 			await goto('/');
 		} else {
 			await setGroups();
-			defaultPermissions = await getUserDefaultPermissions(localStorage.token);
+			if ($user?.role === 'super_admin') {
+				defaultPermissions = await getUserDefaultPermissions(localStorage.token);
+			}
 		}
 		loaded = true;
 	});
@@ -219,6 +221,7 @@
 
 		<hr class="mb-2 border-gray-100 dark:border-gray-850" />
 
+		{#if $user?.role === 'super_admin'}
 		<GroupModal
 			bind:show={showDefaultPermissionsModal}
 			tabs={['permissions']}
@@ -251,5 +254,6 @@
 				<ChevronRight strokeWidth="2.5" />
 			</div>
 		</button>
+		{/if}
 	</div>
 {/if}

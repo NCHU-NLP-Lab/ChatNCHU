@@ -379,6 +379,7 @@
 			</div>
 			<div class=" self-center">{$i18n.t('Database')}</div>
 		</button>
+		{/if}
 	</div>
 
 	<div class="flex-1 mt-3 lg:mt-0 overflow-y-scroll pr-1 scrollbar-hidden">

@@ -501,9 +501,8 @@
 							{/if}
 						</div>
 					</div>
+					{/if}
 				</div>
-
-				{/if}
 
 				<div class="mb-3">
 					<div class=" mb-2.5 text-base font-medium">{$i18n.t('ChatNCHU Settings')}</div>
