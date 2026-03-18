@@ -18,6 +18,8 @@
 	};
 
 	export let setGroups = () => {};
+	export let globalPermissions = null;
+	export let globalDemoLimits = null;
 
 	let showEdit = false;
 
@@ -51,6 +53,8 @@
 	edit
 	{users}
 	{group}
+	{globalPermissions}
+	{globalDemoLimits}
 	onSubmit={updateHandler}
 	onDelete={deleteHandler}
 />

@@ -24,6 +24,7 @@
 	import AddGroupModal from './Groups/AddGroupModal.svelte';
 	import { createNewGroup, getGroups } from '$lib/apis/groups';
 	import { getUserDefaultPermissions, updateUserDefaultPermissions } from '$lib/apis/users';
+	import { getAdminConfig } from '$lib/apis/auths';
 
 	const i18n = getContext('i18n');
 
@@ -79,6 +80,7 @@
 	};
 
 	let showCreateGroupModal = false;
+	let globalDemoLimits = null;
 	let showDefaultPermissionsModal = false;
 
 	const setGroups = async () => {
@@ -120,6 +122,14 @@
 			await setGroups();
 			if ($user?.role === 'super_admin') {
 				defaultPermissions = await getUserDefaultPermissions(localStorage.token);
+			}
+			const adminConfig = await getAdminConfig(localStorage.token);
+			if (adminConfig) {
+				globalDemoLimits = {
+					enable_demo_time_limit: adminConfig.ENABLE_DEMO_TIME_LIMIT ?? false,
+					demo_daily_login_limit: adminConfig.DEMO_DAILY_LOGIN_LIMIT ?? 1,
+					demo_session_duration: adminConfig.DEMO_SESSION_DURATION ?? 7200
+				};
 			}
 		}
 		loaded = true;
@@ -213,7 +223,7 @@
 
 				{#each filteredGroups as group}
 					<div class="my-2">
-						<GroupItem {group} {users} {setGroups} />
+						<GroupItem {group} {users} {setGroups} globalPermissions={defaultPermissions} {globalDemoLimits} />
 					</div>
 				{/each}
 			</div>
@@ -223,6 +233,8 @@
 
 		{#if $user?.role === 'super_admin'}
 		<GroupModal
+			globalPermissions={defaultPermissions}
+			{globalDemoLimits}
 			bind:show={showDefaultPermissionsModal}
 			tabs={['permissions']}
 			bind:permissions={defaultPermissions}

@@ -1,4 +1,6 @@
-<script lang="ts">
+"""Write the new Permissions.svelte file."""
+
+content = r'''<script lang="ts">
 	import { getContext, onMount } from 'svelte';
 	const i18n = getContext('i18n');
 
@@ -294,3 +296,9 @@
 		{/if}
 	{/if}
 </div>
+'''
+
+out = 'src/lib/components/admin/Users/Groups/Permissions.svelte'
+with open(out, 'wb') as f:
+    f.write(content.encode().replace(b'\n', b'\r\n'))
+print('Written OK')

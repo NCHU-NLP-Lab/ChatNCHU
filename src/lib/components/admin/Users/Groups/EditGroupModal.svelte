@@ -13,6 +13,8 @@
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 
 	export let onSubmit: Function = () => {};
+	export let globalPermissions: any = null;
+	export let globalDemoLimits: any = null;
 	export let onDelete: Function = () => {};
 
 	export let show = false;
@@ -225,7 +227,7 @@
 							{#if selectedTab == 'general'}
 								<Display bind:name bind:description />
 							{:else if selectedTab == 'permissions'}
-								<Permissions bind:permissions {custom} limitedAdmin={$user?.role === 'admin'} />
+								<Permissions bind:permissions {custom} limitedAdmin={$user?.role === 'admin'} {globalPermissions} {globalDemoLimits} />
 							{:else if selectedTab == 'users'}
 								<Users bind:userIds {users} />
 							{/if}
