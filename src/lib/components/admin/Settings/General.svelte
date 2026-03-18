@@ -224,6 +224,17 @@
 						<Switch bind:state={adminConfig.SHOW_ADMIN_DETAILS} />
 					</div>
 
+					<div class="mb-2.5">
+						<div class="text-xs font-medium">{$i18n.t('Admin Email')}</div>
+						<div class="text-xs text-gray-500 mb-1">{$i18n.t('Contact email shown on login page')}</div>
+						<input
+							class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+							type="email"
+							placeholder="admin@example.com"
+							bind:value={adminConfig.ADMIN_EMAIL}
+						/>
+					</div>
+
 					{#if $user?.role === 'super_admin'}
 					<div class="mb-2.5 flex w-full justify-between pr-2">
 						<div class=" self-center text-xs font-medium">{$i18n.t('Enable API Key')}</div>
@@ -654,17 +665,6 @@
 						</div>
 					</div>
 
-
-					<div class="mb-2.5">
-						<div class="text-xs font-medium">{$i18n.t('Admin Email')}</div>
-						<div class="text-xs text-gray-500 mb-1">{$i18n.t('Contact email shown on login page')}</div>
-						<input
-							class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
-							type="email"
-							placeholder="admin@example.com"
-							bind:value={adminConfig.ADMIN_EMAIL}
-						/>
-					</div>
 
 					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
 						<div class="self-center text-xs font-medium">

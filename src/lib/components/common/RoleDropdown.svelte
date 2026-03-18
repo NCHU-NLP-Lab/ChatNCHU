@@ -10,10 +10,10 @@
 	let open = false;
 
 	const ROLES = [
-		{ code: 'pending', type: 'muted' },
-		{ code: 'user', type: 'success' },
-		{ code: 'admin', type: 'info' },
 		{ code: 'super_admin', type: 'warning' },
+		{ code: 'admin', type: 'info' },
+		{ code: 'user', type: 'success' },
+		{ code: 'pending', type: 'muted' },
 		{ code: 'suspended', type: 'error' }
 	];
 
