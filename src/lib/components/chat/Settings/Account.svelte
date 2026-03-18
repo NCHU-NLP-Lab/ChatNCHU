@@ -269,7 +269,7 @@
 			<UpdatePassword />
 		</div>
 
-		{#if $user?.role === 'admin' || $config?.features?.enable_api_key}
+		{#if ($user?.role === 'admin' || $user?.role === 'super_admin') || $config?.features?.enable_api_key}
 		<hr class="border-gray-50 dark:border-gray-850 my-2" />
 
 		<div class="flex justify-between items-center text-sm">
@@ -285,7 +285,7 @@
 
 		{#if showAPIKeys}
 			<div class="flex flex-col gap-4">
-				{#if $user?.role === 'admin'}
+				{#if ($user?.role === 'admin' || $user?.role === 'super_admin')}
 				<div class="justify-between w-full">
 					<div class="flex justify-between w-full">
 						<div class="self-center text-xs font-medium">{$i18n.t('JWT Token')}</div>

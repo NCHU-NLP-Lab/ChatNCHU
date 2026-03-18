@@ -160,7 +160,7 @@ async def update_feedback_by_id(
 
 @router.delete("/feedback/{id}")
 async def delete_feedback_by_id(id: str, user=Depends(get_verified_user)):
-    if user.role == "admin":
+    if user.role in ("admin", "super_admin"):
         success = Feedbacks.delete_feedback_by_id(id=id)
     else:
         success = Feedbacks.delete_feedback_by_id_and_user_id(id=id, user_id=user.id)

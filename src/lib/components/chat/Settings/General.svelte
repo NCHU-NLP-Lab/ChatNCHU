@@ -259,7 +259,7 @@
 			</div>
 		</div>
 
-		{#if $user?.role === 'admin' || $user?.permissions?.chat?.controls}
+		{#if ($user?.role === 'admin' || $user?.role === 'super_admin') || $user?.permissions?.chat?.controls}
 			<hr class="border-gray-50 dark:border-gray-850 my-3" />
 
 			<div>
@@ -285,7 +285,7 @@
 				</div>
 
 				{#if showAdvanced}
-					<AdvancedParams admin={$user?.role === 'admin'} bind:params />
+					<AdvancedParams admin={($user?.role === 'admin' || $user?.role === 'super_admin')} bind:params />
 					<hr class=" border-gray-100 dark:border-gray-850" />
 
 					<div class=" w-full justify-between">

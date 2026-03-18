@@ -25,7 +25,7 @@ router = APIRouter()
 
 @router.get("/", response_model=list[ModelUserResponse])
 async def get_models(id: Optional[str] = None, user=Depends(get_verified_user)):
-    if user.role == "admin":
+    if user.role in ("admin", "super_admin"):
         return Models.get_models()
     else:
         return Models.get_models_by_user_id(user.id)
@@ -52,7 +52,7 @@ async def create_new_model(
     form_data: ModelForm,
     user=Depends(get_verified_user),
 ):
-    if user.role != "admin" and not has_permission(
+    if user.role not in ("admin", "super_admin") and not has_permission(
         user.id, "workspace.models", request.app.state.config.USER_PERMISSIONS
     ):
         raise HTTPException(
@@ -89,7 +89,7 @@ async def get_model_by_id(id: str, user=Depends(get_verified_user)):
     model = Models.get_model_by_id(id)
     if model:
         if (
-            user.role == "admin"
+            user.role in ("admin", "super_admin")
             or model.user_id == user.id
             or has_access(user.id, "read", model.access_control)
         ):
@@ -111,7 +111,7 @@ async def toggle_model_by_id(id: str, user=Depends(get_verified_user)):
     model = Models.get_model_by_id(id)
     if model:
         if (
-            user.role == "admin"
+            user.role in ("admin", "super_admin")
             or model.user_id == user.id
             or has_access(user.id, "write", model.access_control)
         ):
@@ -158,7 +158,7 @@ async def update_model_by_id(
     if (
         model.user_id != user.id
         and not has_access(user.id, "write", model.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -184,7 +184,7 @@ async def delete_model_by_id(id: str, user=Depends(get_verified_user)):
         )
 
     if (
-        user.role != "admin"
+        user.role not in ("admin", "super_admin")
         and model.user_id != user.id
         and not has_access(user.id, "write", model.access_control)
     ):

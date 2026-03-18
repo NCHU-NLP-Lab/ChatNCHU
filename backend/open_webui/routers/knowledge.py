@@ -42,7 +42,7 @@ router = APIRouter()
 async def get_knowledge(user=Depends(get_verified_user)):
     knowledge_bases = []
 
-    if user.role == "admin":
+    if user.role in ("admin", "super_admin"):
         knowledge_bases = Knowledges.get_knowledge_bases()
     else:
         knowledge_bases = Knowledges.get_knowledge_bases_by_user_id(user.id, "read")
@@ -90,7 +90,7 @@ async def get_knowledge(user=Depends(get_verified_user)):
 async def get_knowledge_list(user=Depends(get_verified_user)):
     knowledge_bases = []
 
-    if user.role == "admin":
+    if user.role in ("admin", "super_admin"):
         knowledge_bases = Knowledges.get_knowledge_bases()
     else:
         knowledge_bases = Knowledges.get_knowledge_bases_by_user_id(user.id, "write")
@@ -142,7 +142,7 @@ async def get_knowledge_list(user=Depends(get_verified_user)):
 async def create_new_knowledge(
     request: Request, form_data: KnowledgeForm, user=Depends(get_verified_user)
 ):
-    if user.role != "admin" and not has_permission(
+    if user.role not in ("admin", "super_admin") and not has_permission(
         user.id, "workspace.knowledge", request.app.state.config.USER_PERMISSIONS
     ):
         raise HTTPException(
@@ -168,7 +168,7 @@ async def create_new_knowledge(
 
 @router.post("/reindex", response_model=bool)
 async def reindex_knowledge_files(request: Request, user=Depends(get_verified_user)):
-    if user.role != "admin":
+    if user.role not in ("admin", "super_admin"):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ERROR_MESSAGES.UNAUTHORIZED,
@@ -245,7 +245,7 @@ async def get_knowledge_by_id(id: str, user=Depends(get_verified_user)):
     if knowledge:
 
         if (
-            user.role == "admin"
+            user.role in ("admin", "super_admin")
             or knowledge.user_id == user.id
             or has_access(user.id, "read", knowledge.access_control)
         ):
@@ -285,7 +285,7 @@ async def update_knowledge_by_id(
     if (
         knowledge.user_id != user.id
         and not has_access(user.id, "write", knowledge.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -335,7 +335,7 @@ def add_file_to_knowledge_by_id(
     if (
         knowledge.user_id != user.id
         and not has_access(user.id, "write", knowledge.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -419,7 +419,7 @@ def update_file_from_knowledge_by_id(
     if (
         knowledge.user_id != user.id
         and not has_access(user.id, "write", knowledge.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
 
         raise HTTPException(
@@ -490,7 +490,7 @@ def remove_file_from_knowledge_by_id(
     if (
         knowledge.user_id != user.id
         and not has_access(user.id, "write", knowledge.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -578,7 +578,7 @@ async def delete_knowledge_by_id(id: str, user=Depends(get_verified_user)):
     if (
         knowledge.user_id != user.id
         and not has_access(user.id, "write", knowledge.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -641,7 +641,7 @@ async def reset_knowledge_by_id(id: str, user=Depends(get_verified_user)):
     if (
         knowledge.user_id != user.id
         and not has_access(user.id, "write", knowledge.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -684,7 +684,7 @@ def add_files_to_knowledge_batch(
     if (
         knowledge.user_id != user.id
         and not has_access(user.id, "write", knowledge.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

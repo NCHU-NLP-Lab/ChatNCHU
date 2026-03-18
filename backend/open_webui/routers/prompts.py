@@ -20,7 +20,7 @@ router = APIRouter()
 
 @router.get("/", response_model=list[PromptModel])
 async def get_prompts(user=Depends(get_verified_user)):
-    if user.role == "admin":
+    if user.role in ("admin", "super_admin"):
         prompts = Prompts.get_prompts()
     else:
         prompts = Prompts.get_prompts_by_user_id(user.id, "read")
@@ -30,7 +30,7 @@ async def get_prompts(user=Depends(get_verified_user)):
 
 @router.get("/list", response_model=list[PromptUserResponse])
 async def get_prompt_list(user=Depends(get_verified_user)):
-    if user.role == "admin":
+    if user.role in ("admin", "super_admin"):
         prompts = Prompts.get_prompts()
     else:
         prompts = Prompts.get_prompts_by_user_id(user.id, "write")
@@ -47,7 +47,7 @@ async def get_prompt_list(user=Depends(get_verified_user)):
 async def create_new_prompt(
     request: Request, form_data: PromptForm, user=Depends(get_verified_user)
 ):
-    if user.role != "admin" and not has_permission(
+    if user.role not in ("admin", "super_admin") and not has_permission(
         user.id, "workspace.prompts", request.app.state.config.USER_PERMISSIONS
     ):
         raise HTTPException(
@@ -82,7 +82,7 @@ async def get_prompt_by_command(command: str, user=Depends(get_verified_user)):
 
     if prompt:
         if (
-            user.role == "admin"
+            user.role in ("admin", "super_admin")
             or prompt.user_id == user.id
             or has_access(user.id, "read", prompt.access_control)
         ):
@@ -116,7 +116,7 @@ async def update_prompt_by_command(
     if (
         prompt.user_id != user.id
         and not has_access(user.id, "write", prompt.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -150,7 +150,7 @@ async def delete_prompt_by_command(command: str, user=Depends(get_verified_user)
     if (
         prompt.user_id != user.id
         and not has_access(user.id, "write", prompt.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

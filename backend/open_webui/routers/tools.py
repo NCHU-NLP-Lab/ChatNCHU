@@ -70,7 +70,7 @@ async def get_tools(request: Request, user=Depends(get_verified_user)):
             )
         )
 
-    if user.role != "admin":
+    if user.role not in ("admin", "super_admin"):
         tools = [
             tool
             for tool in tools
@@ -88,7 +88,7 @@ async def get_tools(request: Request, user=Depends(get_verified_user)):
 
 @router.get("/list", response_model=list[ToolUserResponse])
 async def get_tool_list(user=Depends(get_verified_user)):
-    if user.role == "admin":
+    if user.role in ("admin", "super_admin"):
         tools = Tools.get_tools()
     else:
         tools = Tools.get_tools_by_user_id(user.id, "write")
@@ -117,7 +117,7 @@ async def create_new_tools(
     form_data: ToolForm,
     user=Depends(get_verified_user),
 ):
-    if user.role != "admin" and not has_permission(
+    if user.role not in ("admin", "super_admin") and not has_permission(
         user.id, "workspace.tools", request.app.state.config.USER_PERMISSIONS
     ):
         raise HTTPException(
@@ -182,7 +182,7 @@ async def get_tools_by_id(id: str, user=Depends(get_verified_user)):
 
     if tools:
         if (
-            user.role == "admin"
+            user.role in ("admin", "super_admin")
             or tools.user_id == user.id
             or has_access(user.id, "read", tools.access_control)
         ):
@@ -217,7 +217,7 @@ async def update_tools_by_id(
     if (
         tools.user_id != user.id
         and not has_access(user.id, "write", tools.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -276,7 +276,7 @@ async def delete_tools_by_id(
     if (
         tools.user_id != user.id
         and not has_access(user.id, "write", tools.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -363,7 +363,7 @@ async def update_tools_valves_by_id(
     if (
         tools.user_id != user.id
         and not has_access(user.id, "write", tools.access_control)
-        and user.role != "admin"
+        and user.role not in ("admin", "super_admin")
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

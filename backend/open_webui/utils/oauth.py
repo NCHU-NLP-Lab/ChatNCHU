@@ -408,7 +408,7 @@ class OAuthManager:
             expires_delta=parse_duration(auth_manager_config.JWT_EXPIRES_IN),
         )
 
-        if auth_manager_config.ENABLE_OAUTH_GROUP_MANAGEMENT and user.role != "admin":
+        if auth_manager_config.ENABLE_OAUTH_GROUP_MANAGEMENT and user.role not in ("admin", "super_admin"):
             self.update_user_groups(
                 user=user,
                 user_data=user_data,
