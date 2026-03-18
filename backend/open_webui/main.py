@@ -446,6 +446,18 @@ async def lifespan(app: FastAPI):
         get_license_data(app, LICENSE_KEY)
 
 
+    # ChatNCHU: Migrate existing admins to super_admin
+    from open_webui.models.users import Users as _Users
+    first_user = _Users.get_first_user()
+    if first_user and first_user.role == "admin":
+        # First run after upgrade: convert all admins to super_admin
+        from open_webui.internal.db import get_db
+        from open_webui.models.users import User
+        with get_db() as db:
+            db.query(User).filter(User.role == "admin").update({"role": "super_admin"})
+            db.commit()
+        log.info("ChatNCHU: Migrated all existing admins to super_admin")
+
     asyncio.create_task(periodic_usage_pool_cleanup())
     yield
 
@@ -1375,7 +1387,7 @@ async def get_app_config(request: Request):
                     {
                         "active_entries": app.state.USER_COUNT,
                     }
-                    if user.role == "admin"
+                    if user.role == "super_admin"
                     else {}
                 ),
             }

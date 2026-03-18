@@ -554,7 +554,7 @@ async def get_demo_session(
     user=Depends(get_current_user),
 ):
     # Admin users are exempt from demo time limit
-    if user.role == "admin":
+    if user.role in ("admin", "super_admin"):
         return {"enabled": False}
 
     limits = get_user_demo_limits(user.id, request.app.state.config)
@@ -662,7 +662,7 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
 
     if user:
         # ChatNCHU: Demo session time limit check
-        if user.role != "admin":
+        if user.role not in ("admin", "super_admin"):
             limits = get_user_demo_limits(user.id, request.app.state.config)
             if limits["enabled"]:
                 daily_limit = limits["daily_limit"]
@@ -811,7 +811,7 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
 
     try:
         role = (
-            "admin" if user_count == 0 else request.app.state.config.DEFAULT_USER_ROLE
+            "super_admin" if user_count == 0 else request.app.state.config.DEFAULT_USER_ROLE
         )
 
         if user_count == 0:
@@ -918,7 +918,7 @@ async def signout(request: Request, response: Response):
             data = decode_token(token)
             if data and "id" in data:
                 user = Users.get_user_by_id(data["id"])
-                if user and user.role != "admin":
+                if user and user.role not in ("admin", "super_admin"):
                     limits = get_user_demo_limits(user.id, request.app.state.config)
                     if limits["enabled"]:
                         DemoSessions.mark_logged_out(user.id)
@@ -977,6 +977,10 @@ async def add_user(form_data: AddUserForm, user=Depends(get_admin_user)):
 
     if Users.get_user_by_employee_id(form_data.employee_id):
         raise HTTPException(400, detail="This Employee ID / Student ID is already registered.")
+
+    # ChatNCHU: Only super_admin can create super_admin users
+    if form_data.role == "super_admin" and user.role != "super_admin":
+        raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
 
     try:
         hashed = get_password_hash(form_data.password)
@@ -1047,33 +1051,40 @@ async def get_admin_details(request: Request, user=Depends(get_current_user)):
 
 @router.get("/admin/config")
 async def get_admin_config(request: Request, user=Depends(get_admin_user)):
-    return {
+    # ChatNCHU: Limited admin only sees a subset of config
+    config = {
         "SHOW_ADMIN_DETAILS": request.app.state.config.SHOW_ADMIN_DETAILS,
-        "WEBUI_URL": request.app.state.config.WEBUI_URL,
         "ENABLE_SIGNUP": request.app.state.config.ENABLE_SIGNUP,
-        "ENABLE_API_KEY": request.app.state.config.ENABLE_API_KEY,
-        "ENABLE_API_KEY_ENDPOINT_RESTRICTIONS": request.app.state.config.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS,
-        "API_KEY_ALLOWED_ENDPOINTS": request.app.state.config.API_KEY_ALLOWED_ENDPOINTS,
         "DEFAULT_USER_ROLE": request.app.state.config.DEFAULT_USER_ROLE,
-        "JWT_EXPIRES_IN": request.app.state.config.JWT_EXPIRES_IN,
-        "ENABLE_COMMUNITY_SHARING": request.app.state.config.ENABLE_COMMUNITY_SHARING,
-        "ENABLE_MESSAGE_RATING": request.app.state.config.ENABLE_MESSAGE_RATING,
-        "ENABLE_CHANNELS": request.app.state.config.ENABLE_CHANNELS,
-        "ENABLE_USER_WEBHOOKS": request.app.state.config.ENABLE_USER_WEBHOOKS,
         # ChatNCHU
         "ALLOWED_EMAIL_DOMAINS": request.app.state.config.ALLOWED_EMAIL_DOMAINS,
-        "ENABLE_EMAIL_VERIFICATION": request.app.state.config.ENABLE_EMAIL_VERIFICATION,
+        "ADMIN_EMAIL": request.app.state.config.ADMIN_EMAIL,
         "ENABLE_DEMO_TIME_LIMIT": request.app.state.config.ENABLE_DEMO_TIME_LIMIT,
         "DEMO_DAILY_LOGIN_LIMIT": request.app.state.config.DEMO_DAILY_LOGIN_LIMIT,
         "DEMO_SESSION_DURATION": request.app.state.config.DEMO_SESSION_DURATION,
-        "SMTP_HOST": request.app.state.config.SMTP_HOST,
-        "SMTP_PORT": request.app.state.config.SMTP_PORT,
-        "SMTP_USER": request.app.state.config.SMTP_USER,
-        "SMTP_PASSWORD": request.app.state.config.SMTP_PASSWORD,
-        "SMTP_FROM": request.app.state.config.SMTP_FROM,
-        "SMTP_USE_TLS": request.app.state.config.SMTP_USE_TLS,
-        "ADMIN_EMAIL": request.app.state.config.ADMIN_EMAIL,
     }
+
+    if user.role == "super_admin":
+        config.update({
+            "WEBUI_URL": request.app.state.config.WEBUI_URL,
+            "ENABLE_API_KEY": request.app.state.config.ENABLE_API_KEY,
+            "ENABLE_API_KEY_ENDPOINT_RESTRICTIONS": request.app.state.config.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS,
+            "API_KEY_ALLOWED_ENDPOINTS": request.app.state.config.API_KEY_ALLOWED_ENDPOINTS,
+            "JWT_EXPIRES_IN": request.app.state.config.JWT_EXPIRES_IN,
+            "ENABLE_COMMUNITY_SHARING": request.app.state.config.ENABLE_COMMUNITY_SHARING,
+            "ENABLE_MESSAGE_RATING": request.app.state.config.ENABLE_MESSAGE_RATING,
+            "ENABLE_CHANNELS": request.app.state.config.ENABLE_CHANNELS,
+            "ENABLE_USER_WEBHOOKS": request.app.state.config.ENABLE_USER_WEBHOOKS,
+            "ENABLE_EMAIL_VERIFICATION": request.app.state.config.ENABLE_EMAIL_VERIFICATION,
+            "SMTP_HOST": request.app.state.config.SMTP_HOST,
+            "SMTP_PORT": request.app.state.config.SMTP_PORT,
+            "SMTP_USER": request.app.state.config.SMTP_USER,
+            "SMTP_PASSWORD": request.app.state.config.SMTP_PASSWORD,
+            "SMTP_FROM": request.app.state.config.SMTP_FROM,
+            "SMTP_USE_TLS": request.app.state.config.SMTP_USE_TLS,
+        })
+
+    return config
 
 
 class AdminConfig(BaseModel):
@@ -1108,89 +1119,63 @@ class AdminConfig(BaseModel):
 async def update_admin_config(
     request: Request, form_data: AdminConfig, user=Depends(get_admin_user)
 ):
+    # Fields both admin and super_admin can update
     request.app.state.config.SHOW_ADMIN_DETAILS = form_data.SHOW_ADMIN_DETAILS
-    request.app.state.config.WEBUI_URL = form_data.WEBUI_URL
     request.app.state.config.ENABLE_SIGNUP = form_data.ENABLE_SIGNUP
-
-    request.app.state.config.ENABLE_API_KEY = form_data.ENABLE_API_KEY
-    request.app.state.config.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS = (
-        form_data.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS
-    )
-    request.app.state.config.API_KEY_ALLOWED_ENDPOINTS = (
-        form_data.API_KEY_ALLOWED_ENDPOINTS
-    )
-
-    request.app.state.config.ENABLE_CHANNELS = form_data.ENABLE_CHANNELS
 
     if form_data.DEFAULT_USER_ROLE in ["pending", "user", "admin"]:
         request.app.state.config.DEFAULT_USER_ROLE = form_data.DEFAULT_USER_ROLE
 
-    pattern = r"^(-1|0|(-?\d+(\.\d+)?)(ms|s|m|h|d|w))$"
-
-    # Check if the input string matches the pattern
-    if re.match(pattern, form_data.JWT_EXPIRES_IN):
-        request.app.state.config.JWT_EXPIRES_IN = form_data.JWT_EXPIRES_IN
-
-    request.app.state.config.ENABLE_COMMUNITY_SHARING = (
-        form_data.ENABLE_COMMUNITY_SHARING
-    )
-    request.app.state.config.ENABLE_MESSAGE_RATING = form_data.ENABLE_MESSAGE_RATING
-
-    request.app.state.config.ENABLE_USER_WEBHOOKS = form_data.ENABLE_USER_WEBHOOKS
-
-    # ChatNCHU settings
+    # ChatNCHU shared settings
     if form_data.ALLOWED_EMAIL_DOMAINS is not None:
         request.app.state.config.ALLOWED_EMAIL_DOMAINS = form_data.ALLOWED_EMAIL_DOMAINS
-    if form_data.ENABLE_EMAIL_VERIFICATION is not None:
-        request.app.state.config.ENABLE_EMAIL_VERIFICATION = form_data.ENABLE_EMAIL_VERIFICATION
+    if form_data.ADMIN_EMAIL is not None:
+        request.app.state.config.ADMIN_EMAIL = form_data.ADMIN_EMAIL
     if form_data.ENABLE_DEMO_TIME_LIMIT is not None:
         request.app.state.config.ENABLE_DEMO_TIME_LIMIT = form_data.ENABLE_DEMO_TIME_LIMIT
     if form_data.DEMO_DAILY_LOGIN_LIMIT is not None:
         request.app.state.config.DEMO_DAILY_LOGIN_LIMIT = form_data.DEMO_DAILY_LOGIN_LIMIT
     if form_data.DEMO_SESSION_DURATION is not None:
         request.app.state.config.DEMO_SESSION_DURATION = form_data.DEMO_SESSION_DURATION
-    if form_data.SMTP_HOST is not None:
-        request.app.state.config.SMTP_HOST = form_data.SMTP_HOST
-    if form_data.SMTP_PORT is not None:
-        request.app.state.config.SMTP_PORT = form_data.SMTP_PORT
-    if form_data.SMTP_USER is not None:
-        request.app.state.config.SMTP_USER = form_data.SMTP_USER
-    if form_data.SMTP_PASSWORD is not None:
-        request.app.state.config.SMTP_PASSWORD = form_data.SMTP_PASSWORD
-    if form_data.SMTP_FROM is not None:
-        request.app.state.config.SMTP_FROM = form_data.SMTP_FROM
-    if form_data.SMTP_USE_TLS is not None:
-        request.app.state.config.SMTP_USE_TLS = form_data.SMTP_USE_TLS
-    if form_data.ADMIN_EMAIL is not None:
-        request.app.state.config.ADMIN_EMAIL = form_data.ADMIN_EMAIL
 
-    return {
-        "SHOW_ADMIN_DETAILS": request.app.state.config.SHOW_ADMIN_DETAILS,
-        "WEBUI_URL": request.app.state.config.WEBUI_URL,
-        "ENABLE_SIGNUP": request.app.state.config.ENABLE_SIGNUP,
-        "ENABLE_API_KEY": request.app.state.config.ENABLE_API_KEY,
-        "ENABLE_API_KEY_ENDPOINT_RESTRICTIONS": request.app.state.config.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS,
-        "API_KEY_ALLOWED_ENDPOINTS": request.app.state.config.API_KEY_ALLOWED_ENDPOINTS,
-        "ENABLE_CHANNELS": request.app.state.config.ENABLE_CHANNELS,
-        "DEFAULT_USER_ROLE": request.app.state.config.DEFAULT_USER_ROLE,
-        "JWT_EXPIRES_IN": request.app.state.config.JWT_EXPIRES_IN,
-        "ENABLE_COMMUNITY_SHARING": request.app.state.config.ENABLE_COMMUNITY_SHARING,
-        "ENABLE_MESSAGE_RATING": request.app.state.config.ENABLE_MESSAGE_RATING,
-        "ENABLE_USER_WEBHOOKS": request.app.state.config.ENABLE_USER_WEBHOOKS,
-        # ChatNCHU
-        "ALLOWED_EMAIL_DOMAINS": request.app.state.config.ALLOWED_EMAIL_DOMAINS,
-        "ENABLE_EMAIL_VERIFICATION": request.app.state.config.ENABLE_EMAIL_VERIFICATION,
-        "ENABLE_DEMO_TIME_LIMIT": request.app.state.config.ENABLE_DEMO_TIME_LIMIT,
-        "DEMO_DAILY_LOGIN_LIMIT": request.app.state.config.DEMO_DAILY_LOGIN_LIMIT,
-        "DEMO_SESSION_DURATION": request.app.state.config.DEMO_SESSION_DURATION,
-        "SMTP_HOST": request.app.state.config.SMTP_HOST,
-        "SMTP_PORT": request.app.state.config.SMTP_PORT,
-        "SMTP_USER": request.app.state.config.SMTP_USER,
-        "SMTP_PASSWORD": request.app.state.config.SMTP_PASSWORD,
-        "SMTP_FROM": request.app.state.config.SMTP_FROM,
-        "SMTP_USE_TLS": request.app.state.config.SMTP_USE_TLS,
-        "ADMIN_EMAIL": request.app.state.config.ADMIN_EMAIL,
-    }
+    # Super admin only fields
+    if user.role == "super_admin":
+        request.app.state.config.WEBUI_URL = form_data.WEBUI_URL
+        request.app.state.config.ENABLE_API_KEY = form_data.ENABLE_API_KEY
+        request.app.state.config.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS = (
+            form_data.ENABLE_API_KEY_ENDPOINT_RESTRICTIONS
+        )
+        request.app.state.config.API_KEY_ALLOWED_ENDPOINTS = (
+            form_data.API_KEY_ALLOWED_ENDPOINTS
+        )
+        request.app.state.config.ENABLE_CHANNELS = form_data.ENABLE_CHANNELS
+
+        pattern = r"^(-1|0|(-?\d+(\.\d+)?)(ms|s|m|h|d|w))$"
+        if re.match(pattern, form_data.JWT_EXPIRES_IN):
+            request.app.state.config.JWT_EXPIRES_IN = form_data.JWT_EXPIRES_IN
+
+        request.app.state.config.ENABLE_COMMUNITY_SHARING = (
+            form_data.ENABLE_COMMUNITY_SHARING
+        )
+        request.app.state.config.ENABLE_MESSAGE_RATING = form_data.ENABLE_MESSAGE_RATING
+        request.app.state.config.ENABLE_USER_WEBHOOKS = form_data.ENABLE_USER_WEBHOOKS
+
+        if form_data.ENABLE_EMAIL_VERIFICATION is not None:
+            request.app.state.config.ENABLE_EMAIL_VERIFICATION = form_data.ENABLE_EMAIL_VERIFICATION
+        if form_data.SMTP_HOST is not None:
+            request.app.state.config.SMTP_HOST = form_data.SMTP_HOST
+        if form_data.SMTP_PORT is not None:
+            request.app.state.config.SMTP_PORT = form_data.SMTP_PORT
+        if form_data.SMTP_USER is not None:
+            request.app.state.config.SMTP_USER = form_data.SMTP_USER
+        if form_data.SMTP_PASSWORD is not None:
+            request.app.state.config.SMTP_PASSWORD = form_data.SMTP_PASSWORD
+        if form_data.SMTP_FROM is not None:
+            request.app.state.config.SMTP_FROM = form_data.SMTP_FROM
+        if form_data.SMTP_USE_TLS is not None:
+            request.app.state.config.SMTP_USE_TLS = form_data.SMTP_USE_TLS
+
+    return await get_admin_config(request=request, user=user)
 
 
 class LdapServerConfig(BaseModel):
@@ -1300,7 +1285,7 @@ async def update_ldap_config(
 # create api key
 @router.post("/api_key", response_model=ApiKey)
 async def generate_api_key(request: Request, user=Depends(get_current_user)):
-    if not request.app.state.config.ENABLE_API_KEY and user.role != "admin":
+    if not request.app.state.config.ENABLE_API_KEY and user.role != "super_admin":
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             detail=ERROR_MESSAGES.API_KEY_CREATION_NOT_ALLOWED,
@@ -1320,7 +1305,7 @@ async def generate_api_key(request: Request, user=Depends(get_current_user)):
 # delete api key
 @router.delete("/api_key", response_model=bool)
 async def delete_api_key(request: Request, user=Depends(get_current_user)):
-    if not request.app.state.config.ENABLE_API_KEY and user.role != "admin":
+    if not request.app.state.config.ENABLE_API_KEY and user.role != "super_admin":
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             detail=ERROR_MESSAGES.API_KEY_CREATION_NOT_ALLOWED,
@@ -1332,7 +1317,7 @@ async def delete_api_key(request: Request, user=Depends(get_current_user)):
 # get api key
 @router.get("/api_key", response_model=ApiKey)
 async def get_api_key(request: Request, user=Depends(get_current_user)):
-    if not request.app.state.config.ENABLE_API_KEY and user.role != "admin":
+    if not request.app.state.config.ENABLE_API_KEY and user.role != "super_admin":
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             detail=ERROR_MESSAGES.API_KEY_NOT_FOUND,

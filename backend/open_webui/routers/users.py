@@ -19,7 +19,7 @@ from open_webui.env import SRC_LOG_LEVELS
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
-from open_webui.utils.auth import get_admin_user, get_password_hash, get_verified_user
+from open_webui.utils.auth import get_admin_user, get_super_admin_user, get_password_hash, get_verified_user
 from open_webui.utils.access_control import get_permissions
 
 
@@ -111,7 +111,7 @@ class UserPermissions(BaseModel):
 
 
 @router.get("/default/permissions", response_model=UserPermissions)
-async def get_default_user_permissions(request: Request, user=Depends(get_admin_user)):
+async def get_default_user_permissions(request: Request, user=Depends(get_super_admin_user)):
     return {
         "workspace": WorkspacePermissions(
             **request.app.state.config.USER_PERMISSIONS.get("workspace", {})
@@ -130,7 +130,7 @@ async def get_default_user_permissions(request: Request, user=Depends(get_admin_
 
 @router.post("/default/permissions")
 async def update_default_user_permissions(
-    request: Request, form_data: UserPermissions, user=Depends(get_admin_user)
+    request: Request, form_data: UserPermissions, user=Depends(get_super_admin_user)
 ):
     request.app.state.config.USER_PERMISSIONS = form_data.model_dump()
     return request.app.state.config.USER_PERMISSIONS
@@ -143,13 +143,33 @@ async def update_default_user_permissions(
 
 @router.post("/update/role", response_model=Optional[UserModel])
 async def update_user_role(form_data: UserRoleUpdateForm, user=Depends(get_admin_user)):
-    if user.id != form_data.id and form_data.id != Users.get_first_user().id:
-        return Users.update_user_role_by_id(form_data.id, form_data.role)
+    # ChatNCHU: Role hierarchy guards
+    # Cannot change own role
+    if user.id == form_data.id:
+        raise HTTPException(403, detail=ERROR_MESSAGES.ACTION_PROHIBITED)
 
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail=ERROR_MESSAGES.ACTION_PROHIBITED,
-    )
+    # Cannot change first user's role
+    first_user = Users.get_first_user()
+    if form_data.id == first_user.id:
+        raise HTTPException(403, detail=ERROR_MESSAGES.ACTION_PROHIBITED)
+
+    target_user = Users.get_user_by_id(form_data.id)
+    if not target_user:
+        raise HTTPException(404, detail=ERROR_MESSAGES.USER_NOT_FOUND)
+
+    # Limited admin cannot assign super_admin role
+    if user.role == "admin" and form_data.role == "super_admin":
+        raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
+
+    # Limited admin cannot modify super_admin users
+    if user.role == "admin" and target_user.role == "super_admin":
+        raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
+
+    # Only first user can modify other super_admins
+    if target_user.role == "super_admin" and user.id != first_user.id:
+        raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
+
+    return Users.update_user_role_by_id(form_data.id, form_data.role)
 
 
 ############################
@@ -291,6 +311,21 @@ async def update_user_by_id(
     user = Users.get_user_by_id(user_id)
 
     if user:
+        # ChatNCHU: Role hierarchy guards for update
+        first_user = Users.get_first_user()
+
+        # Cannot edit first user (except by themselves — but role change still blocked)
+        if user_id == first_user.id and session_user.id != first_user.id:
+            raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
+
+        # Limited admin cannot edit super_admin users
+        if session_user.role == "admin" and user.role == "super_admin":
+            raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
+
+        # Only first user can edit other super_admins
+        if user.role == "super_admin" and session_user.id != first_user.id:
+            raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
+
         if form_data.email.lower() != user.email:
             email_user = Users.get_user_by_email(form_data.email.lower())
             if email_user:
@@ -310,9 +345,11 @@ async def update_user_by_id(
             log.debug(f"hashed: {hashed}")
             Auths.update_user_password_by_id(user_id, hashed)
 
-        if form_data.role and form_data.role in ["pending", "user", "admin", "suspended"]:
-            if user_id != session_user.id and user_id != Users.get_first_user().id:
-                Users.update_user_role_by_id(user_id, form_data.role)
+        if form_data.role:
+            valid_roles = ["pending", "user", "admin", "super_admin", "suspended"] if session_user.role == "super_admin" else ["pending", "user", "admin", "suspended"]
+            if form_data.role in valid_roles:
+                if user_id != session_user.id and user_id != first_user.id:
+                    Users.update_user_role_by_id(user_id, form_data.role)
 
         Auths.update_email_by_id(user_id, form_data.email.lower())
         update_data = {
@@ -353,18 +390,30 @@ async def update_user_by_id(
 
 @router.delete("/{user_id}", response_model=bool)
 async def delete_user_by_id(user_id: str, user=Depends(get_admin_user)):
-    if user.id != user_id:
-        result = Auths.delete_auth_by_id(user_id)
+    if user.id == user_id:
+        raise HTTPException(403, detail=ERROR_MESSAGES.ACTION_PROHIBITED)
 
-        if result:
-            return True
+    target_user = Users.get_user_by_id(user_id)
+    if not target_user:
+        raise HTTPException(404, detail=ERROR_MESSAGES.USER_NOT_FOUND)
 
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=ERROR_MESSAGES.DELETE_USER_ERROR,
-        )
+    # ChatNCHU: Role hierarchy guards for delete
+    first_user = Users.get_first_user()
 
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail=ERROR_MESSAGES.ACTION_PROHIBITED,
-    )
+    # Cannot delete first user
+    if user_id == first_user.id:
+        raise HTTPException(403, detail=ERROR_MESSAGES.ACTION_PROHIBITED)
+
+    # Limited admin cannot delete super_admin users
+    if user.role == "admin" and target_user.role == "super_admin":
+        raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
+
+    # Only first user can delete other super_admins
+    if target_user.role == "super_admin" and user.id != first_user.id:
+        raise HTTPException(403, detail=ERROR_MESSAGES.ACCESS_PROHIBITED)
+
+    result = Auths.delete_auth_by_id(user_id)
+    if result:
+        return True
+
+    raise HTTPException(500, detail=ERROR_MESSAGES.DELETE_USER_ERROR)
