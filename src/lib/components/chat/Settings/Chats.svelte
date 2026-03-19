@@ -109,6 +109,7 @@
 
 <div class="flex flex-col h-full justify-between space-y-3 text-sm">
 	<div class=" space-y-2 overflow-y-scroll max-h-[28rem] lg:max-h-full">
+		{#if $user?.role === 'super_admin'}
 		<div class="flex flex-col">
 			<input
 				id="chat-import-input"
@@ -163,6 +164,7 @@
 				<div class=" self-center text-sm font-medium">{$i18n.t('Export Chats')}</div>
 			</button>
 		</div>
+		{/if}
 
 		<hr class=" border-gray-100 dark:border-gray-850" />
 
@@ -280,6 +282,7 @@
 				</button>
 			{/if}
 
+			{#if $user?.role === 'super_admin' || $user?.permissions?.chat?.delete}
 			{#if showDeleteConfirm}
 				<div class="flex justify-between rounded-md items-center py-2 px-3.5 w-full transition">
 					<div class="flex items-center space-x-3">
@@ -362,6 +365,7 @@
 					</div>
 					<div class=" self-center text-sm font-medium">{$i18n.t('Delete All Chats')}</div>
 				</button>
+			{/if}
 			{/if}
 		</div>
 	</div>
