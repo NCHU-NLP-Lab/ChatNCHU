@@ -71,7 +71,7 @@
 	};
 
 	let sortKey = 'created_at'; // default sort key
-	let sortOrder = 'asc'; // default sort order
+	let sortOrder = 'desc'; // default sort order
 
 	function setSortKey(key) {
 		if (sortKey === key) {
@@ -97,6 +97,13 @@
 			}
 		})
 		.sort((a, b) => {
+			const roleWeight = { super_admin: 5, admin: 4, user: 3, pending: 2, suspended: 1 };
+			if (sortKey === 'role') {
+				const wa = roleWeight[a.role] ?? 0;
+				const wb = roleWeight[b.role] ?? 0;
+				if (wa !== wb) return sortOrder === 'asc' ? wa - wb : wb - wa;
+				return 0;
+			}
 			if (a[sortKey] < b[sortKey]) return sortOrder === 'asc' ? -1 : 1;
 			if (a[sortKey] > b[sortKey]) return sortOrder === 'asc' ? 1 : -1;
 			return 0;
